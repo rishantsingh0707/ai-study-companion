@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-console.log("REDIS_URL =", process.env.REDIS_URL);
 import express from "express";
 import connectDB from "./config/db.js";
 import { connectRedis } from "./config/redis.js";
@@ -24,6 +23,13 @@ app.get("/", (req, res) => {
     message: "API Running"
   });
 });
+
+import uploadRoutes from "./routes/uploadRoutes.js";
+app.use("/api/files", uploadRoutes);
+
+import authRoutes from "./routes/authRoutes.js";
+app.use("/api/auth", authRoutes);
+
 
 app.listen(PORT, () => {
   console.log(

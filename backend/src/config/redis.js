@@ -1,11 +1,10 @@
 import { createClient } from "redis";
+import dotenv from "dotenv";
+dotenv.config();
 
 const redisClient = createClient({
   url: process.env.REDIS_URL,
 });
-
-console.log("Redis Client Created",process.env.REDIS_URL);
-console.log("Redis Client Options:", process.env.MONGO_URI);
 
 redisClient.on("error", (err) => {
   console.error("Redis Error:", err);
