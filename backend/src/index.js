@@ -24,12 +24,13 @@ app.get("/", (req, res) => {
   });
 });
 
-import uploadRoutes from "./routes/uploadRoutes.js";
-app.use("/api/files", uploadRoutes);
 
-import authRoutes from "./routes/authRoutes.js";
+import documentRoutes from "./routes/documentRoute.js";
+app.use("/api/documents", documentRoutes);
+
+
+import authRoutes from "./routes/authRoute.js";
 app.use("/api/auth", authRoutes);
-
 
 app.listen(PORT, () => {
   console.log(
