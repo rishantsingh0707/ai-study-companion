@@ -18,6 +18,11 @@ const documentSchema = new mongoose.Schema(
       required: true,
     },
 
+    publicId: {
+      type: String,
+      required: true,
+    },
+
     fileType: {
       type: String,
       required: true,
@@ -33,4 +38,4 @@ const documentSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Document",documentSchema);
+export default mongoose.model("Document", documentSchema);
