@@ -13,15 +13,6 @@ const documentSchema = new mongoose.Schema(
       required: true,
     },
 
-    fileUrl: {
-      type: String,
-      required: true,
-    },
-
-    publicId: {
-      type: String,
-      required: true,
-    },
 
     fileType: {
       type: String,
@@ -31,6 +22,17 @@ const documentSchema = new mongoose.Schema(
     fileSize: {
       type: Number,
       required: true,
+    },
+
+    content: {
+      type: String,
+      default: "",
+    },
+
+    processingStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed"],
+      default: "pending",
     },
   },
   {
