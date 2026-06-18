@@ -1,61 +1,69 @@
-import cloudinary from "../config/cloudinary.js";
-import streamifier from "streamifier";
 import Document from "../models/Document.js";
+import { extractText } from "../services/textExtractionService.js";
 
 export const uploadDocument = async (req, res) => {
     try {
-        if (!req.files) {
+        if (!req.files || req.files.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: "No file uploaded",
+                message: "No files uploaded",
             });
         }
-        console.log(req.files);
 
         const uploadedDocuments = [];
 
         for (const file of req.files) {
-            const uploadResult = await new Promise(
-                (resolve, reject) => {
-                    const stream =
-                        cloudinary.uploader.upload_stream(
-                            {
-                                folder: "study-companion",
-                                resource_type: "raw",
-                            },
-                            (error, result) => {
-                                if (error)
-                                    return reject(error);
+            try {
+                // Extract text
+                const text = await extractText(file);
 
-                                resolve(result);
-                            }
-                        );
+                // Remove unnecessary whitespace
+                const cleanedText = text
+                    .replace(/\s+/g, " ")
+                    .trim();
 
-                    streamifier
-                        .createReadStream(file.buffer)
-                        .pipe(stream);
-                }
-            );
+                const document = await Document.create({
+                    userId: req.user._id,
 
-            const document = await Document.create({
-                userId: req.user._id,
+                    title: file.originalname,
 
-                title: file.originalname,
+                    fileType: file.mimetype,
 
-                fileUrl: uploadResult.secure_url,
+                    fileSize: file.size,
 
-                publicId: uploadResult.public_id,
+                    content: cleanedText,
 
-                fileType: file.mimetype,
+                    processingStatus: "completed",
+                });
 
-                fileSize: file.size,
-            });
+                uploadedDocuments.push(document);
+            } catch (error) {
+                console.error(
+                    `Failed to process ${file.originalname}:`,
+                    error.message
+                );
 
-            uploadedDocuments.push(document);
+                const document = await Document.create({
+                    userId: req.user._id,
+
+                    title: file.originalname,
+
+                    fileType: file.mimetype,
+
+                    fileSize: file.size,
+
+                    content: "",
+
+                    processingStatus: "failed",
+                });
+
+                uploadedDocuments.push(document);
+            }
         }
 
         res.status(201).json({
             success: true,
+            count: uploadedDocuments.length,
             documents: uploadedDocuments,
         });
     } catch (error) {
@@ -63,8 +71,7 @@ export const uploadDocument = async (req, res) => {
 
         res.status(500).json({
             success: false,
-            message:
-                "Failed to upload document",
+            message: "Failed to upload documents",
         });
     }
 };
