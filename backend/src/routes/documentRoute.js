@@ -23,4 +23,41 @@ router.get("/test-chroma", async (
     });
 });
 
+
+router.get("/test-chroma-add", async (req, res) => {
+    try {
+        const collection =
+            await getCollection();
+
+        await collection.add({
+            ids: ["test-1"],
+
+            embeddings: [
+                [0.1, 0.2, 0.3]
+            ],
+
+            documents: [
+                "TCP is a transport layer protocol"
+            ],
+
+            metadatas: [
+                {
+                    source: "test"
+                }
+            ]
+        });
+
+        res.json({
+            success: true
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
 export default router;

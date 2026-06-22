@@ -1,8 +1,5 @@
 import { ChromaClient } from "chromadb";
 
-const chroma = new ChromaClient({
-    path: "http://localhost:8000",
-});
-
+const chroma = new ChromaClient();
 
 export default chroma;
