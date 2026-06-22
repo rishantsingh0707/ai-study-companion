@@ -1,5 +1,9 @@
 import Document from "../models/Document.js";
+import Chunk from "../models/Chunk.js";
 import { extractText } from "../services/textExtractionService.js";
+import { chunkText } from "../services/chunkingService.js";
+import { generateEmbedding } from "../services/embeddingService.js";
+
 
 export const uploadDocument = async (req, res) => {
     try {
@@ -22,6 +26,13 @@ export const uploadDocument = async (req, res) => {
                     .replace(/\s+/g, " ")
                     .trim();
 
+                const chunks = chunkText(
+                    cleanedText
+                );
+
+                console.log(
+                    `Created ${chunks.length} chunks`
+                );
                 const document = await Document.create({
                     userId: req.user._id,
 
@@ -35,6 +46,19 @@ export const uploadDocument = async (req, res) => {
 
                     processingStatus: "completed",
                 });
+
+                for (let i = 0; i < chunks.length; i++) {
+
+                    await Chunk.create({
+                        documentId: document._id,
+
+                        userId: req.user._id,
+
+                        content: chunks[i],
+
+                        chunkIndex: i,
+                    });
+                }
 
                 uploadedDocuments.push(document);
             } catch (error) {
