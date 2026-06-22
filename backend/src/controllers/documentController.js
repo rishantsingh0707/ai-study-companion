@@ -1,5 +1,9 @@
 import Document from "../models/Document.js";
+import Chunk from "../models/Chunk.js";
 import { extractText } from "../services/textExtractionService.js";
+import { chunkText } from "../services/chunkingService.js";
+import { generateEmbedding } from "../services/embeddingService.js";
+
 
 export const uploadDocument = async (req, res) => {
     try {
@@ -13,51 +17,66 @@ export const uploadDocument = async (req, res) => {
         const uploadedDocuments = [];
 
         for (const file of req.files) {
+            let document = null;
+
             try {
-                // Extract text
                 const text = await extractText(file);
 
-                // Remove unnecessary whitespace
                 const cleanedText = text
                     .replace(/\s+/g, " ")
                     .trim();
 
-                const document = await Document.create({
+                const chunks = chunkText(cleanedText);
+
+                document = await Document.create({
                     userId: req.user._id,
-
                     title: file.originalname,
-
                     fileType: file.mimetype,
-
                     fileSize: file.size,
-
                     content: cleanedText,
-
-                    processingStatus: "completed",
+                    processingStatus: "pending",
                 });
 
+                for (let i = 0; i < chunks.length; i++) {
+                    await Chunk.create({
+                        documentId: document._id,
+                        userId: req.user._id,
+                        content: chunks[i],
+                        chunkIndex: i,
+                    });
+                }
+
+                document.processingStatus = "completed";
+                await document.save();
+
                 uploadedDocuments.push(document);
+
             } catch (error) {
                 console.error(
                     `Failed to process ${file.originalname}:`,
                     error.message
                 );
 
-                const document = await Document.create({
-                    userId: req.user._id,
+                if (document) {
+                    document.processingStatus = "failed";
+                    await document.save();
 
-                    title: file.originalname,
+                    uploadedDocuments.push(document);
+                } else {
+                    const failedDocument =
+                        await Document.create({
+                            userId: req.user._id,
+                            title: file.originalname,
+                            fileType: file.mimetype,
+                            fileSize: file.size,
+                            content: "",
+                            processingStatus: "failed",
+                        });
 
-                    fileType: file.mimetype,
-
-                    fileSize: file.size,
-
-                    content: "",
-
-                    processingStatus: "failed",
-                });
-
-                uploadedDocuments.push(document);
+                    uploadedDocuments.push(
+                        failedDocument
+                    );
+                }
             }
         }
 
