@@ -3,7 +3,7 @@ import Chunk from "../models/Chunk.js";
 import { extractText } from "../services/textExtractionService.js";
 import { chunkText } from "../services/chunkingService.js";
 import { generateEmbedding } from "../services/embeddingService.js";
-
+import { storeChunkEmbedding } from "../services/chromaService.js";
 
 export const uploadDocument = async (req, res) => {
     try {
@@ -38,11 +38,33 @@ export const uploadDocument = async (req, res) => {
                 });
 
                 for (let i = 0; i < chunks.length; i++) {
-                    await Chunk.create({
+
+                    // Create a chunk document in the CROMA
+                    const chunk = await Chunk.create({
                         documentId: document._id,
+
                         userId: req.user._id,
+
                         content: chunks[i],
+
                         chunkIndex: i,
+                    });
+
+                    const embedding = await generateEmbedding(chunk.content);
+
+                    await storeChunkEmbedding({
+                        chunkId: chunk._id,
+
+                        documentId:
+                            document._id,
+
+                        userId:
+                            req.user._id,
+
+                        content:
+                            chunk.content,
+
+                        embedding,
                     });
                 }
 
