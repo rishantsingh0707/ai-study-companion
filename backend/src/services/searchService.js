@@ -1,23 +1,29 @@
 import { generateEmbedding }
-from "./embeddingService.js";
+    from "./embeddingService.js";
 
 import { getCollection }
-from "./chromaService.js";
+    from "./chromaService.js";
 
 export const searchRelevantChunks =
-async (query, limit = 3) => {
+    async (query, userId, limit = 3) => {
 
-    const embedding =
-        await generateEmbedding(query);
+        const embedding =
+            await generateEmbedding(query);
 
-    const collection =
-        await getCollection();
+        const collection =
+            await getCollection();
 
-    const results =
-        await collection.query({
-            queryEmbeddings: [embedding],
-            nResults: limit,
-        });
+        const results =
+            await collection.query({
+                queryEmbeddings: [embedding],
+                nResults: limit,
+                where: {
+                    userId:
+                        req.user._id.toString(),
+                },
 
-    return results;
-};
+            });
+
+        return results?.documents?.[0] ?? [];
+
+    };

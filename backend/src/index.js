@@ -25,12 +25,19 @@ app.get("/", (req, res) => {
 });
 
 
-import documentRoutes from "./routes/documentRoute.js";
+import documentRoutes
+  from "./routes/documentRoute.js";
 app.use("/api/documents", documentRoutes);
 
 
-import authRoutes from "./routes/authRoute.js";
+import authRoutes
+  from "./routes/authRoute.js";
 app.use("/api/auth", authRoutes);
+
+import chatRoutes
+  from "./routes/chatRoute.js";
+
+app.use("/api/chat", chatRoutes);
 
 app.listen(PORT, () => {
   console.log(
