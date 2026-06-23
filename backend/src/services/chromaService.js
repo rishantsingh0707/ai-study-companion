@@ -13,7 +13,7 @@ export const storeChunkEmbedding = async ({ chunkId, documentId, userId, content
         await getCollection();
 
     await collection.add({
-        ids: [chunkId],
+        ids: [chunkId.toString()],
 
         embeddings: [embedding],
 
@@ -21,8 +21,11 @@ export const storeChunkEmbedding = async ({ chunkId, documentId, userId, content
 
         metadatas: [
             {
-                documentId,
-                userId,
+                documentId:
+                    documentId.toString(),
+
+                userId:
+                    userId.toString(),
             },
         ],
     });
