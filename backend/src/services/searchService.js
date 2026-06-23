@@ -5,7 +5,7 @@ import { getCollection }
     from "./chromaService.js";
 
 export const searchRelevantChunks =
-    async (query, limit = 3) => {
+    async (query, userId, limit = 3) => {
 
         const embedding =
             await generateEmbedding(query);
@@ -17,7 +17,13 @@ export const searchRelevantChunks =
             await collection.query({
                 queryEmbeddings: [embedding],
                 nResults: limit,
+                where: {
+                    userId:
+                        req.user._id.toString(),
+                },
+
             });
 
-        return results.documents[0];
+        return results?.documents?.[0] ?? [];
+
     };

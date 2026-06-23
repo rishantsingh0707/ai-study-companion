@@ -26,6 +26,13 @@ export const chatWithDocuments =
                 await searchRelevantChunks(
                     question
                 );
+            if (!Array.isArray(chunks) || chunks.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "No relevant document context found for this question",
+                    sources: [],
+                });
+            }
 
             const answer =
                 await generateAnswer(
