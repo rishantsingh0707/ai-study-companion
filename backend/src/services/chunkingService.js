@@ -1,4 +1,4 @@
-export const chunkText = (text, chunkSize = 1000) => {
+export const chunkText = (text, chunkSize = 150) => {
     const words = text.split(" ");
 
     const chunks = [];
