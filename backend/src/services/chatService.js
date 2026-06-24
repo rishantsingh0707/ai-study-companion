@@ -7,7 +7,7 @@ const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY,
 });
 
-export const generateAnswer = async (question, chunks) => {
+export const generateAnswer = async (question, chunks,history) => {
 
     const context =
         chunks.join("\n\n");

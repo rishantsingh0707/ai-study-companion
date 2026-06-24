@@ -52,12 +52,16 @@ export const chatWithDocuments = async (req, res) => {
                 sources: [],
             });
         }
+        const history = chat.messages.slice(-10).map(msg => ({
+            role: msg.role,
+            content: msg.content,
+        }));
 
-        const answer =
-            await generateAnswer(
-                question,
-                chunks
-            );
+        const answer = await generateAnswer(
+            question,
+            chunks,
+            history
+        );
         chat.messages.push({
             role: "assistant",
             content: answer,
