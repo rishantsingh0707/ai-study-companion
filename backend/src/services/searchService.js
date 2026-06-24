@@ -19,7 +19,7 @@ export const searchRelevantChunks =
                 nResults: limit,
                 where: {
                     userId:
-                        req.user._id.toString(),
+                        userId.toString(),
                 },
 
             });

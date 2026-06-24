@@ -24,21 +24,32 @@ app.get("/", (req, res) => {
   });
 });
 
+// Routes
 
+// Document Routes
 import documentRoutes
   from "./routes/documentRoute.js";
 app.use("/api/documents", documentRoutes);
 
 
+// Auth Routes
 import authRoutes
   from "./routes/authRoute.js";
 app.use("/api/auth", authRoutes);
 
+// Chat Routes
 import chatRoutes
   from "./routes/chatRoute.js";
-
 app.use("/api/chat", chatRoutes);
 
+// Chat History Routes
+import chatHistoryRoutes
+  from "./routes/chatHistoryRoute.js";
+
+app.use(
+  "/api/chats",
+  chatHistoryRoutes
+);
 app.listen(PORT, () => {
   console.log(
     `Server running on port ${PORT}`
