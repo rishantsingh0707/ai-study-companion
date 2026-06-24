@@ -11,7 +11,8 @@ import { generateAnswer } from "../services/chatService.js";
 
 const router = express.Router();
 
-router.post("/", protect, chatWithDocuments);
+router.post("/:chatId", protect, chatWithDocuments);
+
 router.get("/test-groq",
     async (req, res) => {
 
