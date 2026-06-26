@@ -37,7 +37,7 @@ import authRoutes
   from "./routes/authRoute.js";
 app.use("/api/auth", authRoutes);
 
-// Chat Routes
+// Create NEW Chat
 import chatRoutes
   from "./routes/chatRoute.js";
 app.use("/api/chat", chatRoutes);

@@ -74,10 +74,8 @@ export const uploadDocument = async (req, res) => {
                 uploadedDocuments.push(document);
 
             } catch (error) {
-                console.error(
-                    `Failed to process ${file.originalname}:`,
-                    error.message
-                );
+                console.error(error);
+                
 
                 if (document) {
                     document.processingStatus = "failed";

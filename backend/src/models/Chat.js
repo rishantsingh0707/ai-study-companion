@@ -37,7 +37,12 @@ const chatSchema =
                 default:
                     "New Chat",
             },
-
+            documentId: {
+                type:
+                    mongoose.Schema.Types.ObjectId,
+                ref: "Document",
+                required: true,
+            },
             messages: [
                 messageSchema,
             ],
