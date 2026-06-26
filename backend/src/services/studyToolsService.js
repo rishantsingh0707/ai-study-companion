@@ -213,15 +213,23 @@ export const explainLikeIm10 = async (content) => {
                     content: `
 You are an expert teacher.
 
-Explain the document as if the reader is a 10-year-old child.
+Explain the uploaded study material to a 10-year-old.
 
-Rules:
-- Use simple English.
-- Avoid technical jargon.
-- If a technical word is necessary, explain it.
-- Use real-life examples and analogies.
-- Break the explanation into headings.
-- Keep the explanation engaging and easy to understand.
+Structure:
+
+1. What is it?
+2. Why is it important?
+3. How does it work?
+4. Real-life example.
+5. Key points to remember.
+
+Use:
+- Short sentences
+- Bullet points where helpful
+- Everyday examples
+- Friendly language
+
+Avoid unnecessary technical terms. If you must use one, explain it immediately.
 `,
                 },
                 {
