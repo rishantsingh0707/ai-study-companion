@@ -4,7 +4,10 @@ import protect from "../middleware/authMiddleware.js";
 
 import {
     getSummary,
-    getQuiz
+    getQuiz,
+    getFlashcards,
+    getInterviewQuestions,
+    getSimpleExplanation
 } from "../controllers/studyToolsController.js";
 
 const router = express.Router();
@@ -14,10 +17,27 @@ router.post("/summary/:documentId",
     getSummary
 );
 
-
 router.post(
     "/quiz/:documentId",
     protect,
     getQuiz
+);
+
+router.post(
+    "/flashcards/:documentId",
+    protect,
+    getFlashcards
+);
+
+router.post(
+    "/interview/:documentId",
+    protect,
+    getInterviewQuestions
+);
+
+router.post(
+    "/explain/:documentId",
+    protect,
+    getSimpleExplanation
 );
 export default router;

@@ -33,7 +33,73 @@ Rules:
     return completion.choices[0].message.content;
 };
 
-export const generateQuiz = async (content, count = 10) => {
+export const generateQuiz = async (content, difficulty = "easy", count = 10) => {
+
+    const completion =
+        await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+
+            response_format: {
+                type: "json_object",
+            },
+
+            messages: [
+                {
+                    role: "system",
+
+                    content: `
+Generate exactly ${count} ${difficulty} multiple choice questions from the document.
+
+Difficulty Guidelines:
+
+Easy:
+- Direct definition questions
+- Basic facts
+- Beginner level
+
+Medium:
+- Conceptual understanding
+- Application based
+- Requires reasoning
+
+Hard:
+- Scenario based
+- Analytical
+- Real interview/exam level
+
+Rules:
+- Four options per question.
+- One correct answer.
+- Short explanation.
+- Return ONLY valid JSON.
+
+Format:
+
+{
+    "questions":[
+        {
+            "question":"",
+            "options":["","","",""],
+            "correctAnswer":"",
+            "explanation":""
+        }
+    ]
+}
+`,
+                },
+                {
+                    role: "user",
+                    content,
+                },
+            ],
+        });
+
+    return JSON.parse(
+        completion.choices[0].message.content
+    );
+};
+
+export const generateFlashcards = async (content, count = 20) => {
     const completion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         response_format: {
@@ -43,20 +109,22 @@ export const generateQuiz = async (content, count = 10) => {
             {
                 role: "system",
                 content: `
-Generate exactly ${count} multiple choice questions.
+Generate exactly ${count} flashcards.
 
-Return ONLY valid JSON.
+Rules:
+- Return ONLY valid JSON.
+- Each flashcard should test one concept.
+- Keep the front side short.
+- Keep the back side concise but informative.
 
 Format:
 {
-  "questions":[
-    {
-      "question":"",
-      "options":["","","",""],
-      "correctAnswer":"",
-      "explanation":""
-    }
-  ]
+    "flashcards": [
+        {
+            "front": "",
+            "back": ""
+        }
+    ]
 }
 `,
             },
@@ -70,4 +138,98 @@ Format:
     return JSON.parse(
         completion.choices[0].message.content
     );
+};
+
+export const generateInterviewQuestions = async (content, difficulty = "easy", count = 10) => {
+
+    const completion =
+        await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+
+            response_format: {
+                type: "json_object",
+            },
+
+            messages: [
+                {
+                    role: "system",
+                    content: `
+Generate exactly ${count} ${difficulty} interview questions from the document.
+
+Difficulty Guidelines:
+
+Easy:
+- Definition based
+- Basic concepts
+- Beginner friendly
+
+Medium:
+- Conceptual
+- "Why" and "How" questions
+- Requires understanding
+
+Hard:
+- Scenario based
+- Comparison questions
+- Real interview style
+- Requires deep understanding
+
+Return ONLY valid JSON.
+
+Format:
+
+{
+    "questions":[
+        {
+            "question":"",
+            "answer":""
+        }
+    ]
+}
+`,
+                },
+                {
+                    role: "user",
+                    content,
+                },
+            ],
+        });
+
+    return JSON.parse(
+        completion.choices[0].message.content
+    );
+};
+
+export const explainLikeIm10 = async (content) => {
+
+    const completion =
+        await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+
+            messages: [
+                {
+                    role: "system",
+
+                    content: `
+You are an expert teacher.
+
+Explain the document as if the reader is a 10-year-old child.
+
+Rules:
+- Use simple English.
+- Avoid technical jargon.
+- If a technical word is necessary, explain it.
+- Use real-life examples and analogies.
+- Break the explanation into headings.
+- Keep the explanation engaging and easy to understand.
+`,
+                },
+                {
+                    role: "user",
+                    content,
+                },
+            ],
+        });
+
+    return completion.choices[0].message.content;
 };
