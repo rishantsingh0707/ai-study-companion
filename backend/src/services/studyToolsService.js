@@ -32,3 +32,42 @@ Rules:
 
     return completion.choices[0].message.content;
 };
+
+export const generateQuiz = async (content, count = 10) => {
+    const completion = await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        response_format: {
+            type: "json_object",
+        },
+        messages: [
+            {
+                role: "system",
+                content: `
+Generate exactly ${count} multiple choice questions.
+
+Return ONLY valid JSON.
+
+Format:
+{
+  "questions":[
+    {
+      "question":"",
+      "options":["","","",""],
+      "correctAnswer":"",
+      "explanation":""
+    }
+  ]
+}
+`,
+            },
+            {
+                role: "user",
+                content,
+            },
+        ],
+    });
+
+    return JSON.parse(
+        completion.choices[0].message.content
+    );
+};
