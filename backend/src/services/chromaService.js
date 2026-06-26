@@ -25,7 +25,7 @@ export const storeChunkEmbedding = async ({ chunkId, documentId, userId, content
                     documentId.toString(),
 
                 userId:
-                    req.user._id.toString(),
+                    userId.toString(),
 
             },
         ],

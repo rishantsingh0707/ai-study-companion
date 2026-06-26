@@ -6,13 +6,14 @@ import { generateAnswer }
 
 import Chat from "../models/Chat.js";
 
+import Document
+    from "../models/Document.js";
 
 export const chatWithDocuments = async (req, res) => {
 
     try {
 
-        const { question } =
-            req.body;
+        const { question } = req.body;
 
         if (!question) {
             return res
@@ -31,19 +32,38 @@ export const chatWithDocuments = async (req, res) => {
             });
 
         if (!chat) {
+            console.error(`Chat with ID ${req.params.chatId} not found for user ${req.user._id}`);
             return res.status(404).json({
                 success: false,
                 message: "Chat not found",
             });
         }
+        const documentId = chat.documentId;
+        console.log(`Searching for document with ID ${documentId} for user ${req.user._id}`);
+        const document = await Document.findOne({
+            _id: documentId,
+            userId: req.user._id,
+        });
+
+        if (!document) {
+            console.error(`Document with ID ${documentId} not found for user ${req.user._id}`);
+            return res.status(404).json({
+                success: false,
+                message:
+                    "Document not found",
+            });
+        }
+
         chat.messages.push({
             role: "user",
             content: question,
         });
+
         const chunks =
             await searchRelevantChunks(
                 question,
-                req.user._id
+                req.user._id,
+                documentId
             );
         if (!Array.isArray(chunks) || chunks.length === 0) {
             return res.status(404).json({
