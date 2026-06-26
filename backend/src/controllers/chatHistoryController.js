@@ -6,8 +6,12 @@ export const createChat = async (req, res) => {
 
         const { documentId } = req.body;
 
-        console.log("User:", req.user._id);
-        console.log("Document:", documentId);
+        if (!documentId || typeof documentId !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "documentId is required",
+            });
+        }
 
         const document = await Document.findOne({
             _id: documentId,
