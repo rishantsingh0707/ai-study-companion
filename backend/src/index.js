@@ -29,18 +29,28 @@ app.get("/", (req, res) => {
 // Document Routes
 import documentRoutes
   from "./routes/documentRoute.js";
-app.use("/api/documents", documentRoutes);
-
+app.use(
+  "/api/documents",
+  documentRoutes
+);
 
 // Auth Routes
 import authRoutes
   from "./routes/authRoute.js";
-app.use("/api/auth", authRoutes);
+
+app.use(
+  "/api/auth",
+  authRoutes
+);
 
 // Create NEW Chat
 import chatRoutes
   from "./routes/chatRoute.js";
-app.use("/api/chat", chatRoutes);
+
+app.use(
+  "/api/chat",
+  chatRoutes
+);
 
 // Chat History Routes
 import chatHistoryRoutes
@@ -50,6 +60,17 @@ app.use(
   "/api/chats",
   chatHistoryRoutes
 );
+
+// Study Tools Routes
+import studyToolsRoutes
+  from "./routes/studyToolsRoutes.js";
+
+app.use(
+  "/api/study-tools",
+  studyToolsRoutes
+);
+
+
 app.listen(PORT, () => {
   console.log(
     `Server running on port ${PORT}`
