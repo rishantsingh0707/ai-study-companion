@@ -144,10 +144,13 @@ export const getInterviewQuestions = async (req, res) => {
             });
         }
 
-        const {
-            difficulty = "easy",
-            count = 10,
-        } = req.body;
+        const safeCount = Number.parseInt(count, 10);
+        if (!Number.isInteger(safeCount) || safeCount < 1 || safeCount > 50) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid count",
+            });
+        }
 
         const allowed =
             ["easy", "medium", "hard"];
@@ -163,7 +166,7 @@ export const getInterviewQuestions = async (req, res) => {
             await generateInterviewQuestions(
                 document.content,
                 difficulty,
-                count
+                safeCount
             );
 
         res.json({
