@@ -241,3 +241,37 @@ Avoid unnecessary technical terms. If you must use one, explain it immediately.
 
     return completion.choices[0].message.content;
 };
+
+export const generateNotes = async (content) => {
+
+    const completion =
+        await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+
+            messages: [
+                {
+                    role: "system",
+                    content: `
+You are an expert study assistant.
+
+Convert the document into well-structured study notes.
+
+Rules:
+- Use Markdown.
+- Create headings and subheadings.
+- Use bullet points.
+- Highlight important concepts.
+- Remove unnecessary details.
+- Include formulas or definitions if present.
+- End with a "Quick Revision" section.
+`,
+                },
+                {
+                    role: "user",
+                    content,
+                },
+            ],
+        });
+
+    return completion.choices[0].message.content;
+};

@@ -7,7 +7,8 @@ import {
     getQuiz,
     getFlashcards,
     getInterviewQuestions,
-    getSimpleExplanation
+    getSimpleExplanation,
+    getNotes
 } from "../controllers/studyToolsController.js";
 
 const router = express.Router();
@@ -39,5 +40,11 @@ router.post(
     "/explain/:documentId",
     protect,
     getSimpleExplanation
+);
+
+router.post(
+    "/notes/:documentId",
+    protect,
+    getNotes
 );
 export default router;

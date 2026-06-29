@@ -225,3 +225,41 @@ export const getSimpleExplanation = async (req, res) => {
         });
     }
 };
+
+export const getNotes = async (req, res) => {
+    try {
+
+        const document =
+            await Document.findOne({
+                _id: req.params.documentId,
+                userId: req.user._id,
+            });
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                message: "Document not found",
+            });
+        }
+
+        const notes =
+            await generateNotes(
+                document.content
+            );
+
+        res.json({
+            success: true,
+            notes,
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message:
+                "Failed to generate notes",
+        });
+    }
+};
