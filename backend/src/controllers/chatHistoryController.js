@@ -57,8 +57,8 @@ export const createChat = async (req, res) => {
 export const getChat = async (req, res) => {
 
     const cacheKey =
-        `chat:${req.params.id}`;
-
+        `user:${req.user._id}:chat:${req.params.id}`;
+        
     const cached =
         await getCache(cacheKey);
 
