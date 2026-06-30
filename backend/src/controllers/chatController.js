@@ -93,6 +93,15 @@ export const chatWithDocuments = async (req, res) => {
 
         await chat.save();
 
+        // Invalidate cache for the chat and user's chat list
+        await deleteCache(
+            `user:${req.user._id}:chat:${chat._id}`
+        );
+
+        await deleteCache(
+            `user:${req.user._id}:chat-list`
+        );
+
         res.json({
             success: true,
             answer,

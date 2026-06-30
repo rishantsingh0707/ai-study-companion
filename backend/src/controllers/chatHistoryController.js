@@ -1,5 +1,10 @@
 import Chat from "../models/Chat.js";
 import Document from "../models/Document.js";
+import {
+    getCache,
+    setCache,
+    deleteCache
+} from "../services/cacheService.js";
 
 export const createChat = async (req, res) => {
     try {
@@ -31,6 +36,9 @@ export const createChat = async (req, res) => {
             messages: [],
         });
 
+        await deleteCache(
+            `user:${req.user._id}:chat-list`
+        );
         res.status(201).json({
             success: true,
             chat,
@@ -47,50 +55,78 @@ export const createChat = async (req, res) => {
 };
 
 export const getChat = async (req, res) => {
-    try {
-        const chat =
-            await Chat.findOne({
-                _id: req.params.id,
-                userId: req.user._id,
-            });
 
-        if (!chat) {
-            return res.status(404).json({
-                success: false,
-                message: "Chat not found, please check the chat ID and try again",
-            });
-        }
+    const cacheKey =
+        `user:${req.user._id}:chat:${req.params.id}`;
+        
+    const cached =
+        await getCache(cacheKey);
 
-        res.json({
+    if (cached) {
+        return res.json({
             success: true,
-            chat,
+            source: "redis",
+            chat: cached,
         });
     }
-    catch (error) {
-        console.error(error);
-        return res.status(500).json({
+
+    const chat =
+        await Chat.findOne({
+            _id: req.params.id,
+            userId: req.user._id,
+        });
+
+    if (!chat) {
+        return res.status(404).json({
             success: false,
-            message: "Failed to retrieve chat",
+            message: "Chat not found",
         });
     }
+
+    await setCache(
+        cacheKey,
+        chat
+    );
+
+    res.json({
+        success: true,
+        source: "mongodb",
+        chat,
+    });
 };
 
 export const getChats = async (req, res) => {
 
+    const cacheKey =
+        `user:${req.user._id}:chat-list`;
+
+    const cached =
+        await getCache(cacheKey);
+
+    if (cached) {
+        return res.json({
+            success: true,
+            source: "redis",
+            chats: cached,
+        });
+    }
+
     const chats =
         await Chat.find({
             userId: req.user._id,
-        });
+        })
+            .sort({
+                updatedAt: -1,
+            });
 
-    if (chats.length === 0) {
-        return res.status(200).json({
-            success: true,
-            chats: [],
-            message: "No chats found, Start a new chat",
-        });
-    }
+    await setCache(
+        cacheKey,
+        chats
+    );
+
     res.json({
         success: true,
+        source: "mongodb",
         chats,
     });
-}
+};
