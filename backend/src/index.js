@@ -5,10 +5,12 @@ import connectDB from "./config/db.js";
 import { connectRedis } from "./config/redis.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { healthCheck } from "./controllers/healthContoller.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.get("/health", healthCheck);
 
 connectDB();
 connectRedis();
