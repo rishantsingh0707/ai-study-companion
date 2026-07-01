@@ -59,7 +59,7 @@ export const chatWithDocuments = async (req, res) => {
         }
 
         const history = chat.messages
-            .slice(-10)
+            .slice(0, -1)
             .map((msg) => ({
                 role: msg.role,
                 content: msg.content,
@@ -80,7 +80,6 @@ export const chatWithDocuments = async (req, res) => {
             "keep-alive"
         );
 
-        res.flushHeaders();
 
         const stream = await streamAnswer(
             question,
@@ -88,6 +87,7 @@ export const chatWithDocuments = async (req, res) => {
             history
         );
 
+        res.flushHeaders();
         let answer = "";
 
         for await (const chunk of stream) {
@@ -98,11 +98,17 @@ export const chatWithDocuments = async (req, res) => {
 
             answer += token;
 
-            res.write(
+            const canContinue = res.write(
                 `data: ${JSON.stringify({
                     token,
                 })}\n\n`
             );
+
+            if (!canContinue) {
+                await new Promise((resolve) => {
+                    res.once("drain", resolve);
+                });
+            }
         }
 
         chat.messages.push({
