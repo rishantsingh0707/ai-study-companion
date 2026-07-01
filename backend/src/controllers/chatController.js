@@ -1,56 +1,42 @@
-import { searchRelevantChunks }
-    from "../services/searchService.js";
-
-import { generateAnswer }
-    from "../services/chatService.js";
+import { searchRelevantChunks } from "../services/searchService.js";
+import { streamAnswer } from "../services/chatService.js";
+import { deleteCache } from "../services/cacheService.js";
 
 import Chat from "../models/Chat.js";
-
-import Document
-    from "../models/Document.js";
+import Document from "../models/Document.js";
 
 export const chatWithDocuments = async (req, res) => {
-
     try {
-
         const { question } = req.body;
 
         if (!question) {
-            return res
-                .status(400)
-                .json({
-                    success: false,
-                    message:
-                        "Question is required",
-                });
+            return res.status(400).json({
+                success: false,
+                message: "Question is required",
+            });
         }
 
-        const chat =
-            await Chat.findOne({
-                _id: req.params.chatId,
-                userId: req.user._id,
-            });
+        const chat = await Chat.findOne({
+            _id: req.params.chatId,
+            userId: req.user._id,
+        });
 
         if (!chat) {
-            console.error(`Chat with ID ${req.params.chatId} not found for user ${req.user._id}`);
             return res.status(404).json({
                 success: false,
                 message: "Chat not found",
             });
         }
-        const documentId = chat.documentId;
-        console.log(`Searching for document with ID ${documentId} for user ${req.user._id}`);
+
         const document = await Document.findOne({
-            _id: documentId,
+            _id: chat.documentId,
             userId: req.user._id,
         });
 
         if (!document) {
-            console.error(`Document with ID ${documentId} not found for user ${req.user._id}`);
             return res.status(404).json({
                 success: false,
-                message:
-                    "Document not found",
+                message: "Document not found",
             });
         }
 
@@ -59,29 +45,72 @@ export const chatWithDocuments = async (req, res) => {
             content: question,
         });
 
-        const chunks =
-            await searchRelevantChunks(
-                question,
-                req.user._id,
-                documentId
-            );
-        if (!Array.isArray(chunks) || chunks.length === 0) {
+        const chunks = await searchRelevantChunks(
+            question,
+            req.user._id,
+            chat.documentId
+        );
+
+        if (!chunks.length) {
             return res.status(404).json({
                 success: false,
-                message: "No relevant document context found for this question",
-                sources: [],
+                message: "No relevant document context found",
             });
         }
-        const history = chat.messages.slice(-10).map(msg => ({
-            role: msg.role,
-            content: msg.content,
-        }));
 
-        const answer = await generateAnswer(
+        const history = chat.messages
+            .slice(0, -1)
+            .map((msg) => ({
+                role: msg.role,
+                content: msg.content,
+            }));
+
+        res.setHeader(
+            "Content-Type",
+            "text/event-stream"
+        );
+
+        res.setHeader(
+            "Cache-Control",
+            "no-cache"
+        );
+
+        res.setHeader(
+            "Connection",
+            "keep-alive"
+        );
+
+
+        const stream = await streamAnswer(
             question,
             chunks,
             history
         );
+
+        res.flushHeaders();
+        let answer = "";
+
+        for await (const chunk of stream) {
+            const token =
+                chunk.choices?.[0]?.delta?.content || "";
+
+            if (!token) continue;
+
+            answer += token;
+
+            const canContinue = res.write(
+                `data: ${JSON.stringify({
+                    token,
+                })}\n\n`
+            );
+
+            if (!canContinue) {
+                await new Promise((resolve) => {
+                    res.once("drain", resolve);
+                });
+            }
+        }
+
         chat.messages.push({
             role: "assistant",
             content: answer,
@@ -93,29 +122,40 @@ export const chatWithDocuments = async (req, res) => {
 
         await chat.save();
 
-        // Invalidate cache for the chat and user's chat list
         await deleteCache(
-            `user:${req.user._id}:chat:${chat._id}`
+            `chat:${chat._id}`
         );
 
         await deleteCache(
             `user:${req.user._id}:chat-list`
         );
 
-        res.json({
-            success: true,
-            answer,
-            sources: chunks,
-        });
+        res.write(
+            `data: ${JSON.stringify({
+                done: true,
+                sources: chunks,
+            })}\n\n`
+        );
+
+        res.end();
 
     } catch (error) {
 
         console.error(error);
 
-        res.status(500).json({
-            success: false,
-            message:
-                "Failed to generate answer",
-        });
+        if (!res.headersSent) {
+            return res.status(500).json({
+                success: false,
+                message: "Failed to generate answer",
+            });
+        }
+
+        res.write(
+            `data: ${JSON.stringify({
+                error: "Failed to generate answer",
+            })}\n\n`
+        );
+
+        res.end();
     }
 };
