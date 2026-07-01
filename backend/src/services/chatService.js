@@ -1,11 +1,8 @@
-import Groq from "groq-sdk";
+import { groq } from "../config/groq.js";
 
 if (!process.env.GROQ_API_KEY) {
     throw new Error('GROQ_API_KEY environment variable is required');
 }
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
-});
 
 export const generateAnswer = async (question, chunks, history) => {
 
