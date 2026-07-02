@@ -1,0 +1,14 @@
+services:
+  backend:
+    build:
+      context: ./backend
+
+    container_name: ai-study-backend
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - ./backend/.env
+
+    restart: unless-stopped

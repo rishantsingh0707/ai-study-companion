@@ -10,14 +10,17 @@ import { healthCheck } from "./controllers/healthContoller.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.get("/health", healthCheck);
-
 connectDB();
 connectRedis();
-
-const PORT = process.env.PORT || 5000;
+app.get("/health", healthCheck);
 
 app.use(cookieParser());
+const PORT = process.env.PORT || 5000;
+
+
+// CORS Middleware
+import corsMiddleware from "./config/cors.js";
+app.use(corsMiddleware);
 
 app.get("/", (req, res) => {
   res.json({
@@ -72,6 +75,7 @@ app.use(
   studyToolsRoutes
 );
 
+// App Porting 
 
 app.listen(PORT, () => {
   console.log(
