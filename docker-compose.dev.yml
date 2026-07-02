@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: ./backend
+
+    container_name: ai-study-backend
+
+    command: npm run dev
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - ./backend/.env
+
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+    depends_on:
+      - chromadb
+
+    restart: unless-stopped
+
+  chromadb:
+    image: chromadb/chroma
+
+    container_name: chromadb
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - chroma-data:/chroma/chroma
+
+    restart: unless-stopped
+
+volumes:
+  chroma-data:
