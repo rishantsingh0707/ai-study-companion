@@ -1,8 +1,21 @@
+import Navbar from "../components/landing/Navbar.jsx";
 
-function LandingPage() {
-  return (
-    <div>LandingPage</div>
-  )
+export default function LandingPage() {
+    return (
+        <>
+            <Navbar />
+
+            <main className="pt-20">
+
+                <section className="flex h-screen items-center justify-center">
+
+                    <h1 className="text-6xl font-bold">
+                        Hero Section
+                    </h1>
+
+                </section>
+
+            </main>
+        </>
+    );
 }
-
-export default LandingPage
