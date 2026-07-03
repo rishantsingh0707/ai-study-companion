@@ -1,2 +1,55 @@
 @import "tailwindcss";
+@import "./themes/nexaTheme.css";
 @plugin "daisyui";
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background: #09090b;
+    color: #f8fafc;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Space Grotesk", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, .05);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255, 255, 255, .08);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, .35);
+}
+
+.glass-navbar {
+    background: rgba(9, 9, 11, .55);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.glow-primary {
+    box-shadow:
+        0 0 35px rgba(124, 58, 237, .35);
+}
+
+.glow-accent {
+    box-shadow:
+        0 0 35px rgba(34, 211, 238, .20);
+}
