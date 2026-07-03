@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { History, MessageSquare, Plus, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import api from "../api/client";
+import { getRecentChats } from "../api/chatApi";
 
 type Chat = {
     _id: string;
@@ -12,10 +12,7 @@ type Chat = {
 export default function Sidebar() {
     const { data, isLoading } = useQuery({
         queryKey: ["chats"],
-        queryFn: async () => {
-            const { data } = await api.get("/api/chats");
-            return data;
-        },
+        queryFn: getRecentChats,
     });
 
     const recentChats = data?.chats?.slice(0, 5) ?? [];
