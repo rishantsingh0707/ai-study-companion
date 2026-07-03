@@ -81,23 +81,21 @@ export default function Navbar() {
 
                 {/* Mobile Button */}
                 <button
+                    type="button"
                     className="btn btn-ghost btn-circle lg:hidden"
+                    aria-controls="mobile-menu"
+                    aria-expanded={isOpen}
+                    aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     {isOpen ? <X size={22} /> : <Menu size={22} />}
                 </button>
-
             </div>
-
             {/* Mobile Menu */}
             {isOpen && (
-
-                <div className="border-t border-white/10 bg-base-200 lg:hidden">
-
+                <div id="mobile-menu" className="border-t border-white/10 bg-base-200 lg:hidden">
                     <div className="flex flex-col gap-2 p-6">
-
                         {navLinks.map((link) => (
-
                             <a
                                 key={link.name}
                                 href={link.href}
@@ -106,9 +104,7 @@ export default function Navbar() {
                             >
                                 {link.name}
                             </a>
-
                         ))}
-
                         <Link
                             to="/login"
                             className="btn btn-primary mt-3"
@@ -116,12 +112,10 @@ export default function Navbar() {
                         >
                             Get Started
                         </Link>
-
                     </div>
-
                 </div>
-
             )}
+
 
         </header>
     );
