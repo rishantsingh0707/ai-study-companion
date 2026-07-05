@@ -2,7 +2,6 @@ import {
   ArrowRight,
   Brain,
   FileText,
-  PlayCircle,
   Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -97,23 +96,6 @@ export default function HeroSection() {
               <ArrowRight size={18} />
 
             </Link>
-
-            <button
-              className="
-                btn
-                btn-outline
-                border-white/20
-                bg-white/5
-                backdrop-blur-xl
-                px-8
-                hover:bg-white/10
-              "
-            >
-              <PlayCircle size={18} />
-
-              Watch Demo
-
-            </button>
 
           </div>
 

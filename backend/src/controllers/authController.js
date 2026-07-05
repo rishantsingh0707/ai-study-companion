@@ -47,7 +47,7 @@ export const register = async (req, res) => {
             success: true,
             token,
             user: {
-                id: user._id,
+                _id: user._id,
                 name: user.name,
                 email: user.email,
             },
@@ -178,4 +178,21 @@ export const googleAuth = async (req, res) => {
             message: "Google authentication failed",
         });
     }
+};
+
+export const logout = (req, res) => {
+
+    res.clearCookie("token");
+
+    res.json({
+        success: true,
+    });
+
+};
+
+export const getProfile = async (req, res) => {
+    res.status(200).json({
+        success: true,
+        user: req.user,
+    });
 };

@@ -1,10 +1,10 @@
-import QueryProvider from "./providers/QueryProvider";
+import { AuthProvider } from "./providers/AuthProvider";
 import AppRouter from "./routes/AppRouter";
 
 export default function App() {
   return (
-    <QueryProvider>
+    <AuthProvider>
       <AppRouter />
-    </QueryProvider>
+    </AuthProvider>
   );
 }
