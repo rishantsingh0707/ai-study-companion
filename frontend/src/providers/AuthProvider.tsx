@@ -41,9 +41,12 @@ export function AuthProvider({
             const profile = await getProfile();
 
             setUser(profile);
-        } catch {
-            removeToken();
+        } catch (err: any) {
+            if (err?.response?.status === 401) {
+                removeToken();
+            }
             setUser(null);
+
         } finally {
             setLoading(false);
         }
