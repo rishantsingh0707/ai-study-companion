@@ -23,14 +23,16 @@ export default function HeroSection() {
         <source src="/hero-video.mp4" type="video/mp4" />
       </video>
 
-
       {/* Dark Overlay */}
-      <div className="absolute inset-0 -z-20 bg-black/55" />
+
+      <div className="absolute inset-0 z-0 bg-black/55" />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#09090B]/95 via-[#09090B]/70 to-transparent" />
+
+      <div className="absolute inset-0 z-0 bg-gradient-to-r from-[`#09090B`]/95 via-[`#09090B`]/70 to-transparent" />
 
       {/* Hero Content */}
+
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6">
 
         <motion.div
