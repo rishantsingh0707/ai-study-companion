@@ -1,17 +1,31 @@
+import { useAuth } from "../providers/AuthProvider";
+
 export default function DashboardPage() {
+
+    const { user } = useAuth();
+
     return (
-        <div className="flex h-full items-center justify-center">
+
+        <div className="flex min-h-screen items-center justify-center bg-base-100">
+
             <div className="text-center">
 
-                <h1 className="text-4xl font-bold">
-                    Welcome Back 👋
+                <h1 className="text-5xl font-bold">
+
+                    Welcome Back
+
                 </h1>
 
-                <p className="mt-3">
-                    Start a new chat or continue an existing one.
+                <p className="mt-5 text-xl">
+
+                    {user?.name}
+
                 </p>
 
             </div>
+
         </div>
+
     );
+
 }

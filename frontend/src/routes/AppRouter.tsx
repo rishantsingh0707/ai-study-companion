@@ -1,64 +1,49 @@
-import { BrowserRouter, Routes, Route, } from "react-router-dom";
+import {
+    Routes,
+    Route,
+    Navigate,
+} from "react-router-dom";
 
-// Layouts
-import AuthLayout from "../layouts/AuthLayout";
-import DashboardLayout from "../layouts/DashboardLayout";
-
-// Pages
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
 import DashboardPage from "../pages/DashboardPage";
-import ChatPage from "../pages/ChatPage";
-import ChatHistoryPage from "../pages/ChatHistoryPage";
-import SettingsPage from "../pages/SettingsPage";
+
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 export default function AppRouter() {
     return (
-        <BrowserRouter>
-            <Routes>
+        <Routes>
 
-                <Route element={<AuthLayout />}>
+            <Route
+                path="/"
+                element={<LandingPage />}
+            />
 
-                    <Route
-                        path="/"
-                        element={<LandingPage />}
-                    />
+            <Route
+                path="/login"
+                element={<LoginPage />}
+            />
 
-                    <Route
-                        path="/login"
-                        element={<LoginPage />}
-                    />
+            <Route
+                path="/register"
+                element={<RegisterPage />}
+            />
 
-                </Route>
+            <Route
+                path="/dashboard"
+                element={
+                    <ProtectedRoute>
+                        <DashboardPage />
+                    </ProtectedRoute>
+                }
+            />
 
-                <Route
-                    path="/dashboard"
-                    element={<DashboardLayout />}
-                >
+            <Route
+                path="*"
+                element={<Navigate to="/" />}
+            />
 
-                    <Route
-                        index
-                        element={<DashboardPage />}
-                    />
-
-                    <Route
-                        path="chat/:chatId"
-                        element={<ChatPage />}
-                    />
-
-                    <Route
-                        path="history"
-                        element={<ChatHistoryPage />}
-                    />
-
-                    <Route
-                        path="settings"
-                        element={<SettingsPage />}
-                    />
-
-                </Route>
-
-            </Routes>
-        </BrowserRouter>
+        </Routes>
     );
 }
