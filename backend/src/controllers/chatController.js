@@ -28,15 +28,13 @@ export const chatWithDocuments = async (req, res) => {
             });
         }
 
-        const document = await Document.findOne({
-            _id: chat.documentId,
-            userId: req.user._id,
-        });
-
-        if (!document) {
-            return res.status(404).json({
+        if (
+            !Array.isArray(chat.documentIds) ||
+            chat.documentIds.length === 0
+        ) {
+            return res.status(400).json({
                 success: false,
-                message: "Document not found",
+                message: "No documents attached to this chat",
             });
         }
 
@@ -48,7 +46,7 @@ export const chatWithDocuments = async (req, res) => {
         const chunks = await searchRelevantChunks(
             question,
             req.user._id,
-            chat.documentId
+            chat.documentIds
         );
 
         if (!chunks.length) {

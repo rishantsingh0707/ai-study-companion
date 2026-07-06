@@ -4,6 +4,7 @@ import {
     createChat,
     getChats,
     getChat,
+    getDashboardStats
 } from "../controllers/chatHistoryController.js";
 
 import protect
@@ -15,6 +16,9 @@ router.post("/", protect, createChat);
 
 router.get("/", protect, getChats);
 
+router.get("/stats", protect, getDashboardStats);
+
 router.get("/:id", protect, getChat);
+
 
 export default router;

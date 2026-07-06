@@ -58,7 +58,7 @@ export const getChat = async (req, res) => {
 
     const cacheKey =
         `user:${req.user._id}:chat:${req.params.id}`;
-        
+
     const cached =
         await getCache(cacheKey);
 
@@ -129,4 +129,61 @@ export const getChats = async (req, res) => {
         source: "mongodb",
         chats,
     });
+};
+
+export const getDashboardStats = async (req, res) => {
+    try {
+
+        const documents =
+            await Document.countDocuments({
+                userId: req.user._id,
+            });
+
+        const chats =
+            await Chat.countDocuments({
+                userId: req.user._id,
+            });
+
+        const userChats =
+            await Chat.find({
+                userId: req.user._id,
+            });
+
+        let studySessions = 0;
+        let aiGenerations = 0;
+
+        userChats.forEach((chat) => {
+
+            studySessions +=
+                chat.messages.filter(
+                    (msg) =>
+                        msg.role === "assistant"
+                ).length;
+
+            aiGenerations +=
+                chat.studyTools?.length || 0;
+
+        });
+
+        res.json({
+            success: true,
+            stats: {
+                documents,
+                chats,
+                studySessions,
+                aiGenerations,
+            },
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message:
+                "Failed to fetch dashboard statistics",
+        });
+
+    }
 };
