@@ -12,19 +12,6 @@ const router = express.Router();
 
 router.post("/upload", protect, upload.array("files", 10), uploadDocument);
 
-router.post("/search", async (req, res) => {
-
-    const { query } = req.body;
-
-    const results =
-        await searchRelevantChunks(
-            query
-        );
-
-    res.json(results);
-}
-);
-
 router.delete("/reset-chroma", async (req, res) => {
     await chroma.deleteCollection({
         name: "study-companion-documents",

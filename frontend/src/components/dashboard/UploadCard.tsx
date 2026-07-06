@@ -1,5 +1,5 @@
 import {
-   type DragEvent,
+    type DragEvent,
     useRef,
     useState,
 } from "react";
@@ -7,12 +7,10 @@ import {
 import { UploadCloud } from "lucide-react";
 
 type UploadCardProps = {
-    onFileSelect: (file: File) => void;
+    onFileSelect: (files: File[]) => void;
 };
 
-export default function UploadCard({
-    onFileSelect,
-}: UploadCardProps) {
+export default function UploadCard({ onFileSelect, }: UploadCardProps) {
 
     const fileInputRef =
         useRef<HTMLInputElement>(null);
@@ -28,18 +26,16 @@ export default function UploadCard({
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
 
-        const file = e.target.files?.[0];
+        const files = Array.from(e.target.files ?? []);
 
-        if (!file) return;
+        if (files.length === 0) return;
 
-        onFileSelect(file);
+        onFileSelect(files);
 
         e.target.value = "";
     };
 
-    const handleDragOver = (
-        e: DragEvent<HTMLDivElement>
-    ) => {
+    const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
 
         e.preventDefault();
 
@@ -51,20 +47,17 @@ export default function UploadCard({
         setIsDragging(false);
     };
 
-    const handleDrop = (
-        e: DragEvent<HTMLDivElement>
-    ) => {
+    const handleDrop = (e: DragEvent<HTMLDivElement>) => {
 
         e.preventDefault();
 
         setIsDragging(false);
 
-        const file =
-            e.dataTransfer.files?.[0];
+        const files = Array.from(e.dataTransfer.files);
 
-        if (!file) return;
+        if (files.length === 0) return;
 
-        onFileSelect(file);
+        onFileSelect(files);
     };
 
     return (
@@ -73,6 +66,7 @@ export default function UploadCard({
                 hidden
                 ref={fileInputRef}
                 type="file"
+                multiple
                 accept=".pdf,.doc,.docx,.txt"
                 onChange={handleFileChange}
             />

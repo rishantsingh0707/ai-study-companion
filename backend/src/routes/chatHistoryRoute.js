@@ -16,8 +16,9 @@ router.post("/", protect, createChat);
 
 router.get("/", protect, getChats);
 
+router.get("/stats", protect, getDashboardStats);
+
 router.get("/:id", protect, getChat);
 
-router.get("/stats", protect, getDashboardStats);
 
 export default router;

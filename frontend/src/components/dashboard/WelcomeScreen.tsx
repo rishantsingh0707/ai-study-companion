@@ -47,9 +47,8 @@ const features = [
 export default function WelcomeScreen() {
     const { user } = useAuth();
 
-    const handleUpload = (file: File) => {
-
-        console.log(file);
+    const handleUpload = (files: File[]) => {
+        console.log(files);
 
     };
     return (
@@ -96,7 +95,7 @@ export default function WelcomeScreen() {
                 />
 
             </section>
-            
+
             {/* Features */}
 
             <section className="mt-12">
