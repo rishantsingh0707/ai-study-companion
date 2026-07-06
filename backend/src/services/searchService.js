@@ -4,7 +4,7 @@ import { generateEmbedding }
 import { getCollection }
     from "./chromaService.js";
 
-export const searchRelevantChunks = async (query, userId, documentId, limit = 3) => {
+export const searchRelevantChunks = async (query, userId, documentIds, limit = 3) => {
 
     const embedding = await generateEmbedding(query);
 
@@ -19,7 +19,7 @@ export const searchRelevantChunks = async (query, userId, documentId, limit = 3)
                     userId: userId.toString(),
                 },
                 {
-                    documentId: documentId.toString(),
+                    documentId: { $in: documentIds.map((id) => id.toString()) },
                 },
             ],
         }
