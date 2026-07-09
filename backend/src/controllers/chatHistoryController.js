@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Chat from "../models/Chat.js";
 import Document from "../models/Document.js";
 import {
@@ -6,42 +7,63 @@ import {
     deleteCache
 } from "../services/cacheService.js";
 
+const isValidChatId = (id) => {
+    return Boolean(id) && id !== "null" && id !== "undefined" && mongoose.Types.ObjectId.isValid(id);
+};
+
 export const createChat = async (req, res) => {
     try {
 
-        const { documentId } = req.body;
+        // Accept either a single documentId or an array documentIds
+        const { documentId, documentIds, title } = req.body;
 
-        if (!documentId || typeof documentId !== "string") {
+        const ids = Array.isArray(documentIds)
+            ? documentIds
+            : documentId
+                ? [documentId]
+                : [];
+
+        if (ids.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: "documentId is required",
+                message: "At least one documentId is required",
             });
         }
 
-        const document = await Document.findOne({
-            _id: documentId,
+        const documents = await Document.find({
+            _id: { $in: ids },
             userId: req.user._id,
         });
 
-        if (!document) {
+        if (documents.length !== ids.length) {
             return res.status(404).json({
                 success: false,
-                message: "Document not found",
+                message: "One or more documents were not found",
             });
         }
 
         const chat = await Chat.create({
             userId: req.user._id,
-            documentId,
+            documentIds: ids,
+            title: title?.trim() || documents[0]?.title || "New Chat",
             messages: [],
         });
 
         await deleteCache(
             `user:${req.user._id}:chat-list`
         );
+
+        const chatObj = chat.toObject();
+        chatObj.documents = documents.map((doc) => ({
+            _id: doc._id,
+            title: doc.title,
+            fileType: doc.fileType,
+            fileSize: doc.fileSize,
+        }));
+
         res.status(201).json({
             success: true,
-            chat,
+            chat: chatObj,
         });
 
     } catch (error) {
@@ -54,7 +76,93 @@ export const createChat = async (req, res) => {
     }
 };
 
+export const addDocumentsToChat = async (req, res) => {
+    try {
+        const { documentIds } = req.body;
+
+        const ids = Array.isArray(documentIds) ? documentIds : [];
+
+        if (ids.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "documentIds array is required",
+            });
+        }
+
+        if (!isValidChatId(req.params.id)) {
+            return res.status(404).json({
+                success: false,
+                message: "Chat not found",
+            });
+        }
+
+        const chat = await Chat.findOne({
+            _id: req.params.id,
+            userId: req.user._id,
+        });
+
+        if (!chat) {
+            return res.status(404).json({
+                success: false,
+                message: "Chat not found",
+            });
+        }
+
+        const documents = await Document.find({
+            _id: { $in: ids },
+            userId: req.user._id,
+        });
+
+        if (documents.length !== ids.length) {
+            return res.status(404).json({
+                success: false,
+                message: "One or more documents were not found",
+            });
+        }
+
+        const existing = new Set(chat.documentIds.map((id) => id.toString()));
+        ids.forEach((id) => existing.add(id.toString()));
+        chat.documentIds = Array.from(existing);
+
+        await chat.save();
+
+        await deleteCache(`user:${req.user._id}:chat:${chat._id}`);
+        await deleteCache(`user:${req.user._id}:chat-list`);
+
+        const allDocuments = await Document.find({
+            _id: { $in: chat.documentIds },
+        });
+
+        const chatObj = chat.toObject();
+        chatObj.documents = allDocuments.map((doc) => ({
+            _id: doc._id,
+            title: doc.title,
+            fileType: doc.fileType,
+            fileSize: doc.fileSize,
+        }));
+
+        res.json({
+            success: true,
+            chat: chatObj,
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to attach documents to chat",
+        });
+    }
+};
+
 export const getChat = async (req, res) => {
+    if (!isValidChatId(req.params.id)) {
+        console.error(`Invalid chat ID: ${req.params.id}`);
+        return res.status(404).json({
+            success: false,
+            message: "Chat not found",
+        });
+    }
 
     const cacheKey =
         `user:${req.user._id}:chat:${req.params.id}`;
@@ -83,15 +191,27 @@ export const getChat = async (req, res) => {
         });
     }
 
+    const documents = await Document.find({
+        _id: { $in: chat.documentIds },
+    });
+
+    const chatObj = chat.toObject();
+    chatObj.documents = documents.map((doc) => ({
+        _id: doc._id,
+        title: doc.title,
+        fileType: doc.fileType,
+        fileSize: doc.fileSize,
+    }));
+
     await setCache(
         cacheKey,
-        chat
+        chatObj
     );
 
     res.json({
         success: true,
         source: "mongodb",
-        chat,
+        chat: chatObj,
     });
 };
 

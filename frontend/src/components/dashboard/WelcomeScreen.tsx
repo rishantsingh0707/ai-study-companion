@@ -6,9 +6,14 @@ import {
     MessageSquare,
     Sparkles,
 } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "../../providers/AuthProvider";
 import UploadCard from "./UploadCard";
 import DashboardStats from "./DashboardStats";
+import { uploadDocuments } from "../../api/documentApi";
+import { runWithStagedProgress } from "../../utils/uploadStages";
 
 
 const features = [
@@ -46,10 +51,54 @@ const features = [
 
 export default function WelcomeScreen() {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const [isUploading, setIsUploading] = useState(false);
 
-    const handleUpload = (files: File[]) => {
-        console.log(files);
+    const handleUpload = async (files: File[]) => {
+        setIsUploading(true);
+        const toastId = toast.loading(`Uploading ${files.length} file${files.length > 1 ? "s" : ""}...`);
 
+        const stopStaging = runWithStagedProgress((label) => {
+            toast.loading(label, { id: toastId });
+        });
+
+        try {
+            const uploaded = await uploadDocuments(files);
+            stopStaging();
+
+            const successful = uploaded.filter(
+                (doc) => doc.processingStatus === "completed"
+            );
+
+            if (successful.length === 0) {
+                toast.error("Failed to process the uploaded file(s)", {
+                    id: toastId,
+                });
+                return;
+            }
+
+            toast.success("Uploaded successfully! You can start chatting now.", {
+                id: toastId,
+            });
+
+            // The chat isn't created yet — it's created once the user sends
+            // their first message, titled after the file they just uploaded.
+            navigate("/dashboard/chat/new", {
+                state: {
+                    readyDocuments: successful.map((doc) => ({
+                        _id: doc._id,
+                        title: doc.title,
+                        fileType: doc.fileType,
+                        fileSize: doc.fileSize,
+                    })),
+                },
+            });
+        } catch {
+            stopStaging();
+            toast.error("Upload failed. Please try again.", { id: toastId });
+        } finally {
+            setIsUploading(false);
+        }
     };
     return (
         <div className="ml-4 mt-4 flex min-h-full flex-col">
@@ -92,6 +141,7 @@ export default function WelcomeScreen() {
 
                 <UploadCard
                     onFileSelect={handleUpload}
+                    disabled={isUploading}
                 />
 
             </section>

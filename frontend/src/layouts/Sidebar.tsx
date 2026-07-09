@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { History, MessageSquare, Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import { getRecentChats } from "../api/chatApi";
 import UserMenu from "../components/common/UserMenu";
@@ -10,20 +10,23 @@ type Chat = {
 };
 
 export default function Sidebar() {
+    const location = useLocation();
+    const activeChatId = location.pathname.match(/\/dashboard\/chat\/([^/]+)/)?.[1];
+
     const { data, isLoading } = useQuery({
         queryKey: ["chats"],
         queryFn: getRecentChats,
     });
 
-    const recentChats = data?.chats?.slice(0, 5) ?? [];
+    const recentChats = data?.chats?.slice(0, 8) ?? [];
 
     return (
         <aside className="hidden w-72 flex-col border-r border-base-300 bg-base-200 md:flex">
 
             {/* Logo Section */}
             <div className="border-b border-base-300 p-4">
-                <Link 
-                    to="/"
+                <Link
+                    to="/dashboard"
                     className="flex items-center gap-2 transition-opacity hover:opacity-80"
                 >
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-base-100 font-bold text-lg">
@@ -37,7 +40,10 @@ export default function Sidebar() {
             <div className="p-4 pb-2">
                 <Link
                     to="/dashboard/chat/new"
-                    className="btn btn-primary flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm text-base-content"
+                    className={`btn flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm border border-primary text-base-content ${!activeChatId || activeChatId === "new"
+                            ? "btn-active"
+                            : "btn-outline"
+                        }`}
                 >
                     <Plus size={16} />
                     New Chat
@@ -65,17 +71,24 @@ export default function Sidebar() {
                         No chats yet
                     </div>
                 ) : (
-                    <div className="space-y-2">
-                        {recentChats.map((chat: Chat) => (
-                            <Link
-                                key={chat._id}
-                                to={`/dashboard/chat/${chat._id}`}
-                                className="btn btn-ghost w-full justify-start"
-                            >
-                                <MessageSquare size={16} />
-                                <span className="truncate">{chat.title}</span>
-                            </Link>
-                        ))}
+                    <div className="space-y-1">
+                        {recentChats.map((chat: Chat) => {
+                            const isActive = chat._id === activeChatId;
+
+                            return (
+                                <Link
+                                    key={chat._id}
+                                    to={`/dashboard/chat/${chat._id}`}
+                                    className={`btn w-full justify-start gap-2 ${isActive
+                                            ? "btn-active bg-base-300"
+                                            : "btn-ghost"
+                                        }`}
+                                >
+                                    <MessageSquare size={16} className="shrink-0" />
+                                    <span className="truncate">{chat.title}</span>
+                                </Link>
+                            );
+                        })}
                     </div>
                 )}
             </div>

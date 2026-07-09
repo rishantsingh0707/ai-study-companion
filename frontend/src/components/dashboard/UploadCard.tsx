@@ -8,9 +8,10 @@ import { UploadCloud } from "lucide-react";
 
 type UploadCardProps = {
     onFileSelect: (files: File[]) => void;
+    disabled?: boolean;
 };
 
-export default function UploadCard({ onFileSelect, }: UploadCardProps) {
+export default function UploadCard({ onFileSelect, disabled = false }: UploadCardProps) {
 
     const fileInputRef =
         useRef<HTMLInputElement>(null);
@@ -19,12 +20,14 @@ export default function UploadCard({ onFileSelect, }: UploadCardProps) {
         useState(false);
 
     const handleChooseFile = () => {
+        if (disabled) return;
         fileInputRef.current?.click();
     };
 
     const handleFileChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
+        if (disabled) return;
 
         const files = Array.from(e.target.files ?? []);
 
@@ -36,8 +39,8 @@ export default function UploadCard({ onFileSelect, }: UploadCardProps) {
     };
 
     const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-
         e.preventDefault();
+        if (disabled) return;
 
         setIsDragging(true);
     };
@@ -52,6 +55,8 @@ export default function UploadCard({ onFileSelect, }: UploadCardProps) {
         e.preventDefault();
 
         setIsDragging(false);
+
+        if (disabled) return;
 
         const files = Array.from(e.dataTransfer.files);
 
@@ -90,6 +95,8 @@ export default function UploadCard({ onFileSelect, }: UploadCardProps) {
             border-dashed
             transition-all
             duration-300
+
+            ${disabled ? "pointer-events-none opacity-60" : ""}
 
             ${isDragging
                         ? `

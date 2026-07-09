@@ -49,7 +49,7 @@ export const chatWithDocuments = async (req, res) => {
             chat.documentIds
         );
 
-        if (!chunks.length) {
+        if (!chunks.documents || chunks.documents.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "No relevant document context found",
@@ -81,7 +81,7 @@ export const chatWithDocuments = async (req, res) => {
 
         const stream = await streamAnswer(
             question,
-            chunks,
+            chunks.documents,
             history
         );
 
@@ -114,24 +114,25 @@ export const chatWithDocuments = async (req, res) => {
             content: answer,
         });
 
-        if (chat.title === "New Chat") {
-            chat.title = question.slice(0, 50);
-        }
-
         await chat.save();
 
         await deleteCache(
-            `chat:${chat._id}`
+            `user:${req.user._id}:chat:${chat._id}`
         );
 
         await deleteCache(
             `user:${req.user._id}:chat-list`
         );
 
+        const sources = chunks.documents.map((content, i) => ({
+            content,
+            ...(chunks.metadatas?.[i] || {}),
+        }));
+
         res.write(
             `data: ${JSON.stringify({
                 done: true,
-                sources: chunks,
+                sources,
             })}\n\n`
         );
 

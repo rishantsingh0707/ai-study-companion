@@ -48,6 +48,11 @@ export default function AppRouter() {
                 />
 
                 <Route
+                    path="chat/new"
+                    element={<ChatPage />}
+                />
+
+                <Route
                     path="chat/:chatId"
                     element={<ChatPage />}
                 />
