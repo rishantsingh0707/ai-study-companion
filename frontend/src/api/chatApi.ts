@@ -86,19 +86,20 @@ export const streamChatMessage = async (
 
                 const jsonStr = line.slice(5).trim();
                 if (!jsonStr) continue;
-
                 try {
                     const parsed = JSON.parse(jsonStr);
-
                     if (parsed.error) {
                         onError(parsed.error);
+                        return;
                     } else if (parsed.done) {
                         onDone(parsed.sources ?? []);
+                        return;
                     } else if (parsed.token) {
                         onToken(parsed.token);
                     }
                 } catch {
                     onError("Failed to parse server response");
+                    return;
                 }
             }
         }
