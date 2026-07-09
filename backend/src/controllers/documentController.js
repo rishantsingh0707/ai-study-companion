@@ -68,6 +68,10 @@ export const uploadDocument = async (req, res) => {
                     });
                 }
 
+                console.log(
+                    `All embeddings generated successfully for ${file.originalname}`
+                );
+
                 document.processingStatus = "completed";
                 await document.save();
 

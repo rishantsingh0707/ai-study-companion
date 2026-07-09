@@ -22,4 +22,6 @@ export const setCache = async (
 
 export const deleteCache = async (key) => {
     await redisClient.del(key);
+
+    console.log(`Cache cleared: ${key}`);
 };

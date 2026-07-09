@@ -85,11 +85,3 @@ app.use(
   "/api/study-tools",
   studyToolsRoutes
 );
-
-// App Porting 
-
-app.listen(PORT, () => {
-  console.log(
-    `Server running on port ${PORT}`
-  );
-});

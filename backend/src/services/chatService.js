@@ -45,22 +45,9 @@ export const streamAnswer = async (question, chunks, history) => {
         messages: [
             {
                 role: "system",
-                content: `You are an AI Study Assistant.
-
-Answer ONLY from the provided context.
-
-If the answer is not available in the context, clearly say so.
-
-Context:
-
-${context}`,
-            },
-
-            ...history,
-
-            {
-                role: "user",
-                content: question,
+                content: `You are an AI Study Assistant.Answer ONLY from the provided context.If the answer is not available in the context, clearly say so.Context:${context}`,
+            }, ...history, {
+                role: "user", content: question,
             },
         ],
     });

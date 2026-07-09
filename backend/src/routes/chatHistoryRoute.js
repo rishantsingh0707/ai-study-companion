@@ -4,7 +4,8 @@ import {
     createChat,
     getChats,
     getChat,
-    getDashboardStats
+    getDashboardStats,
+    addDocumentsToChat,
 } from "../controllers/chatHistoryController.js";
 
 import protect
@@ -13,12 +14,14 @@ import protect
 const router = express.Router();
 
 router.post("/", protect, createChat);
-
+ 
 router.get("/", protect, getChats);
 
 router.get("/stats", protect, getDashboardStats);
 
 router.get("/:id", protect, getChat);
+
+router.post("/:id/documents", protect, addDocumentsToChat);
 
 
 export default router;
