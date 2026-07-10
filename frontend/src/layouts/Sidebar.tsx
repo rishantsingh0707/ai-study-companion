@@ -60,7 +60,7 @@ export default function Sidebar() {
                         {Array.from({ length: 5 }).map((_, index) => (
                             <div
                                 key={index}
-                                className="skeleton h-10 w-full rounded-lg"
+                                className="skeleton h-10 w-full rounded-xl"
                             />
                         ))}
                     </div>
@@ -77,7 +77,7 @@ export default function Sidebar() {
                                 <Link
                                     key={chat._id}
                                     to={`/dashboard/chat/${chat._id}`}
-                                    className={`btn w-full justify-start ${isActive
+                                    className={`btn w-full rounded-xl justify-start ${isActive
                                             ? "btn-active bg-base-300"
                                             : "btn-ghost"
                                         }`}
@@ -93,18 +93,17 @@ export default function Sidebar() {
 
             {/* Footer */}
 
-            <div className="border-t border-base-300 p-2 space-y-3">
+            <div className="space-y-2 p-1">
 
                 <Link
                     to="/dashboard/history"
-                    className="btn btn-ghost w-full justify-start"
+                    className="btn btn-ghost rounded-xl w-full justify-start"
                 >
                     <History size={18} />
                     View All Chats
                 </Link>
 
                 <UserMenu />
-
 
             </div>
 

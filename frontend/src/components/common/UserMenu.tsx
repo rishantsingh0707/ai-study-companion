@@ -35,7 +35,7 @@ export default function UserMenu() {
 
             <label
                 tabIndex={0}
-                className="flex w-full h-16 cursor-pointer items-center gap-3 rounded-2xl border border-base-300 bg-base-200 p-3 transition-all duration-300 hover:border-primary hover:bg-base-300"
+                className="flex w-full cursor-pointer items-center gap-2 rounded-2xl bg-base-200 p-2 transition-all duration-300 hover:border-primary hover:bg-base-300"
             >
 
                 {user?.profilePicture ? (

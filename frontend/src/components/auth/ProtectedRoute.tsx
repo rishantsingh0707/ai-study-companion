@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthProvider";
 import type { JSX } from "react/jsx-runtime";
+import AppShellSkeleton from "../common/AppShellSkeleton";
 
 export default function ProtectedRoute({
     children,
@@ -13,11 +14,7 @@ export default function ProtectedRoute({
     } = useAuth();
 
     if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center">
-                Loading...
-            </div>
-        );
+        return <AppShellSkeleton />;
     }
 
     if (!isAuthenticated) {

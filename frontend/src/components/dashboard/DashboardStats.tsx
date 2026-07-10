@@ -2,6 +2,7 @@ import { FileText, MessageSquare } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardStats } from "../../api/dashboardapi";
 import { useCountUp } from "../../hooks/useCountUp";
+import { Skeleton } from "../common/Skeleton";
 
 type StatCardProps = {
     title: string;
@@ -43,11 +44,34 @@ function StatCard({ title, value, icon: Icon }: StatCardProps) {
     );
 }
 
+function StatCardSkeleton() {
+    return (
+        <div className="rounded-3xl border border-base-300 bg-base-200 p-6">
+            <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-9 w-14" />
+                </div>
+                <Skeleton className="h-14 w-14 rounded-2xl" />
+            </div>
+        </div>
+    );
+}
+
 export default function DashboardStats() {
-    const { data } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ["dashboard-stats"],
         queryFn: getDashboardStats,
     });
+
+    if (isLoading) {
+        return (
+            <div className="grid gap-6 md:grid-cols-2">
+                <StatCardSkeleton />
+                <StatCardSkeleton />
+            </div>
+        );
+    }
 
     const documents = data?.documents ?? 0;
     const chats = data?.chats ?? 0;

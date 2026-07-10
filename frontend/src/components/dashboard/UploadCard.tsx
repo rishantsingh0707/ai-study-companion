@@ -134,7 +134,7 @@ export default function UploadCard({ onFileSelect, disabled = false }: UploadCar
 
                     {isDragging
                         ? "Drop your document here"
-                        : "Upload Your First Document"}
+                        : "Upload Your Document"}
 
                 </h2>
 

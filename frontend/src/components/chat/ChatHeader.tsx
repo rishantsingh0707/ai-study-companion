@@ -30,15 +30,15 @@ export default function ChatHeader({ title, documents }: ChatHeaderProps) {
     }, []);
 
     return (
-        <div className="relative border-b border-base-300 px-4 ">
+        <div className="relative px-4 py-2">
             <div className="flex items-center justify-between">
-                <h1 className="truncate text-lg font-semibold">{title}</h1>
+                <h1 className="truncate text-base font-semibold">{title}</h1>
 
                 <div className="relative" ref={panelRef}>
                     <button
                         type="button"
                         onClick={() => setIsOpen((prev) => !prev)}
-                        className="btn btn-ghost btn-sm flex items-center gap-1.5 text-base-content/60"
+                        className="btn btn-ghost btn-xs rounded-xl flex items-center gap-1.5 text-base-content/60"
                     >
                         <FileText size={16} />
                         <span>
@@ -46,7 +46,7 @@ export default function ChatHeader({ title, documents }: ChatHeaderProps) {
                         </span>
                         <ChevronDown
                             size={14}
-                            className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+                            className={`transition-transform  ${isOpen ? "rotate-180" : ""}`}
                         />
                     </button>
 
@@ -61,7 +61,7 @@ export default function ChatHeader({ title, documents }: ChatHeaderProps) {
                                     {documents.map((doc) => (
                                         <li
                                             key={doc._id}
-                                            className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm hover:bg-base-200"
+                                            className="flex items-center gap-2 rounded-xl px-2 py-2 text-sm hover:bg-base-200"
                                         >
                                             <File size={16} className="shrink-0 text-primary" />
                                             <span className="flex-1 truncate">{doc.title}</span>
