@@ -5,11 +5,14 @@ import toast from "react-hot-toast";
 import ChatHeader from "./ChatHeader";
 import ChatMessages from "./ChatMessages";
 import ChatInput from "./ChatInput";
+import { ChatHeaderSkeleton, ChatMessagesSkeleton } from "./ChatSkeleton";
 import { getChat, createChat, streamChatMessage } from "../../api/chatApi";
 import type { Chat, ChatMessage as ChatMessageType, ChatDocument, StudyModeKey } from "../../types/chat";
 
 type ChatContainerProps = {
+    // null = "new chat" pending mode (no chat persisted yet)
     chatId: string | null;
+    // A file the user already uploaded on the previous page (e.g. dashboard)
     initialDocuments?: ChatDocument[];
 };
 
@@ -27,7 +30,10 @@ export default function ChatContainer({ chatId, initialDocuments }: ChatContaine
     const [isStreaming, setIsStreaming] = useState(false);
     const [streamingContent, setStreamingContent] = useState("");
 
+    // Tracks a chatId we just created ourselves, so the load-effect below
+    // doesn't wastefully refetch data we already have in memory.
     const skipNextLoadRef = useRef<string | null>(null);
+    // Holds the streamed answer as it accumulates, read once streaming ends.
     const streamingContentRef = useRef("");
 
     useEffect(() => {
@@ -68,6 +74,7 @@ export default function ChatContainer({ chatId, initialDocuments }: ChatContaine
         return () => {
             cancelled = true;
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chatId]);
 
     const handleDocumentReady = useCallback((doc: ChatDocument) => {
@@ -157,8 +164,11 @@ export default function ChatContainer({ chatId, initialDocuments }: ChatContaine
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center text-base-content/50">
-                Loading chat...
+            <div className="flex h-full flex-col">
+                <ChatHeaderSkeleton />
+                <div className="flex-1 overflow-hidden">
+                    <ChatMessagesSkeleton />
+                </div>
             </div>
         );
     }
