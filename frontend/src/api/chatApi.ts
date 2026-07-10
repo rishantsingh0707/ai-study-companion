@@ -1,6 +1,6 @@
 import api from "./client";
 import { getToken } from "../utils/auth";
-import type { Chat } from "../types/chat";
+import type { Chat, StudyModeKey } from "../types/chat";
 
 export const getRecentChats = async () => {
     const { data } = await api.get("/api/chats");
@@ -44,7 +44,8 @@ interface StreamCallbacks {
 export const streamChatMessage = async (
     chatId: string,
     question: string,
-    { onToken, onDone, onError }: StreamCallbacks
+    { onToken, onDone, onError }: StreamCallbacks,
+    mode?: StudyModeKey
 ) => {
     try {
         const token = getToken();
@@ -57,7 +58,7 @@ export const streamChatMessage = async (
                     "Content-Type": "application/json",
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
-                body: JSON.stringify({ question }),
+                body: JSON.stringify({ question, mode }),
             }
         );
 
@@ -86,20 +87,19 @@ export const streamChatMessage = async (
 
                 const jsonStr = line.slice(5).trim();
                 if (!jsonStr) continue;
+
                 try {
                     const parsed = JSON.parse(jsonStr);
+
                     if (parsed.error) {
                         onError(parsed.error);
-                        return;
                     } else if (parsed.done) {
                         onDone(parsed.sources ?? []);
-                        return;
                     } else if (parsed.token) {
                         onToken(parsed.token);
                     }
                 } catch {
-                    onError("Failed to parse server response");
-                    return;
+                    // ignore malformed SSE chunk
                 }
             }
         }

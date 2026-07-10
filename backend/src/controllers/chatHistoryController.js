@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Chat from "../models/Chat.js";
 import Document from "../models/Document.js";
 import {
@@ -7,9 +6,6 @@ import {
     deleteCache
 } from "../services/cacheService.js";
 
-const isValidChatId = (id) => {
-    return Boolean(id) && id !== "null" && id !== "undefined" && mongoose.Types.ObjectId.isValid(id);
-};
 
 export const createChat = async (req, res) => {
     try {
@@ -89,13 +85,6 @@ export const addDocumentsToChat = async (req, res) => {
             });
         }
 
-        if (!isValidChatId(req.params.id)) {
-            return res.status(404).json({
-                success: false,
-                message: "Chat not found",
-            });
-        }
-
         const chat = await Chat.findOne({
             _id: req.params.id,
             userId: req.user._id,
@@ -156,13 +145,6 @@ export const addDocumentsToChat = async (req, res) => {
 };
 
 export const getChat = async (req, res) => {
-    if (!isValidChatId(req.params.id)) {
-        console.error(`Invalid chat ID: ${req.params.id}`);
-        return res.status(404).json({
-            success: false,
-            message: "Chat not found",
-        });
-    }
 
     const cacheKey =
         `user:${req.user._id}:chat:${req.params.id}`;
@@ -264,34 +246,11 @@ export const getDashboardStats = async (req, res) => {
                 userId: req.user._id,
             });
 
-        const userChats =
-            await Chat.find({
-                userId: req.user._id,
-            });
-
-        let studySessions = 0;
-        let aiGenerations = 0;
-
-        userChats.forEach((chat) => {
-
-            studySessions +=
-                chat.messages.filter(
-                    (msg) =>
-                        msg.role === "assistant"
-                ).length;
-
-            aiGenerations +=
-                chat.studyTools?.length || 0;
-
-        });
-
         res.json({
             success: true,
             stats: {
                 documents,
                 chats,
-                studySessions,
-                aiGenerations,
             },
         });
 

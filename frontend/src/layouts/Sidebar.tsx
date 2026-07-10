@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { History, MessageSquare, Plus } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { History, MessageSquare, Plus ,BrainCog} from "lucide-react";
+import { Link, useLocation  } from "react-router-dom";
 
 import { getRecentChats } from "../api/chatApi";
 import UserMenu from "../components/common/UserMenu";
@@ -29,15 +29,13 @@ export default function Sidebar() {
                     to="/dashboard"
                     className="flex items-center gap-2 transition-opacity hover:opacity-80"
                 >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-base-100 font-bold text-lg">
-                        N
-                    </div>
+                    <BrainCog className="h-10 w-10 text-primary" />
                     <span className="text-lg font-bold text-base-content">Nexa</span>
                 </Link>
             </div>
 
             {/* Header */}
-            <div className="p-4 pb-2">
+            <div className="p-2 pb-2">
                 <Link
                     to="/dashboard/chat/new"
                     className={`btn flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm border border-primary text-base-content ${!activeChatId || activeChatId === "new"
@@ -51,9 +49,9 @@ export default function Sidebar() {
             </div>
 
             {/* Recent Chats */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto px-2 py-2">
 
-                <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-base-content/60">
+                <h2 className="mb-4 px-2 text-sm font-semibold uppercase tracking-wide text-base-content/60">
                     Recent Chats
                 </h2>
 
@@ -79,7 +77,7 @@ export default function Sidebar() {
                                 <Link
                                     key={chat._id}
                                     to={`/dashboard/chat/${chat._id}`}
-                                    className={`btn w-full justify-start gap-2 ${isActive
+                                    className={`btn w-full justify-start ${isActive
                                             ? "btn-active bg-base-300"
                                             : "btn-ghost"
                                         }`}
@@ -95,7 +93,7 @@ export default function Sidebar() {
 
             {/* Footer */}
 
-            <div className="border-t border-base-300 p-4 space-y-3">
+            <div className="border-t border-base-300 p-2 space-y-3">
 
                 <Link
                     to="/dashboard/history"

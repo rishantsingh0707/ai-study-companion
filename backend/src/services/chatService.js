@@ -33,9 +33,13 @@ export const generateAnswer = async (question, chunks, history) => {
         .message.content;
 };
 
-export const streamAnswer = async (question, chunks, history) => {
+export const streamAnswer = async (question, chunks, history, modeInstruction) => {
 
     const context = chunks.join("\n\n");
+
+    const instruction = modeInstruction
+        ? modeInstruction
+        : "Answer ONLY from the provided context.\n\nIf the answer is not available in the context, clearly say so.";
 
     return await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
@@ -45,11 +49,15 @@ export const streamAnswer = async (question, chunks, history) => {
         messages: [
             {
                 role: "system",
-                content: `You are an AI Study Assistant.Answer ONLY from the provided context.If the answer is not available in the context, clearly say so.Context:${context}`,
-            }, ...history, {
-                role: "user", content: question,
+                content: `You are an AI Study Assistant.${instruction} Context:${context}`,
+            },
+
+            ...history,
+
+            {
+                role: "user",
+                content: question,
             },
         ],
     });
 };
-
