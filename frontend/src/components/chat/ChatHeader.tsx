@@ -30,7 +30,7 @@ export default function ChatHeader({ title, documents }: ChatHeaderProps) {
     }, []);
 
     return (
-        <div className="relative border-b border-base-300 px-4 py-3">
+        <div className="relative border-b border-base-300 px-4 ">
             <div className="flex items-center justify-between">
                 <h1 className="truncate text-lg font-semibold">{title}</h1>
 

@@ -1,13 +1,25 @@
 import { searchRelevantChunks } from "../services/searchService.js";
 import { streamAnswer } from "../services/chatService.js";
 import { deleteCache } from "../services/cacheService.js";
+import { getStudyMode } from "../config/studyModes.js";
 
 import Chat from "../models/Chat.js";
 import Document from "../models/Document.js";
 
 export const chatWithDocuments = async (req, res) => {
     try {
-        const { question } = req.body;
+        const { question: rawQuestion, mode } = req.body;
+
+        const studyMode = mode ? getStudyMode(mode) : null;
+
+        if (mode && !studyMode) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid mode",
+            });
+        }
+
+        const question = rawQuestion?.trim() || studyMode?.defaultQuestion;
 
         if (!question) {
             return res.status(400).json({
@@ -82,7 +94,8 @@ export const chatWithDocuments = async (req, res) => {
         const stream = await streamAnswer(
             question,
             chunks.documents,
-            history
+            history,
+            studyMode?.instruction
         );
 
         res.flushHeaders();

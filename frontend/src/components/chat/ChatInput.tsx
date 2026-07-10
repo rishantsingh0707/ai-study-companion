@@ -1,10 +1,24 @@
 import { useRef, useState, type KeyboardEvent } from "react";
-import { Paperclip, Send, X, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+    Paperclip,
+    Send,
+    X,
+    Loader2,
+    CheckCircle2,
+    AlertCircle,
+    BookOpen,
+    HelpCircle,
+    Layers,
+    Briefcase,
+    Smile,
+    StickyNote,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { uploadDocuments, type UploadedDocument } from "../../api/documentApi";
 import { addDocumentsToChat } from "../../api/chatApi";
 import { runWithStagedProgress } from "../../utils/uploadStages";
-import type { Chat, ChatDocument } from "../../types/chat";
+import { STUDY_MODE_OPTIONS } from "../../types/chat";
+import type { Chat, ChatDocument, StudyModeKey } from "../../types/chat";
 
 type UploadItem = {
     id: string;
@@ -14,13 +28,30 @@ type UploadItem = {
 };
 
 type ChatInputProps = {
-    // null while the chat doesn't exist yet (pending "new chat" mode)
     chatId: string | null;
     canSend: boolean;
-    onSend: (question: string) => void;
+    onSend: (question: string, mode?: StudyModeKey) => void;
     onDocumentReady: (doc: ChatDocument) => void;
     onDocumentsAttached: (chat: Chat) => void;
     disabled: boolean;
+};
+
+const MODE_ICONS: Record<StudyModeKey, React.ComponentType<{ size?: number }>> = {
+    generateSummary: BookOpen,
+    generateQuiz: HelpCircle,
+    generateFlashcards: Layers,
+    generateInterviewQuestions: Briefcase,
+    explainLikeIm10: Smile,
+    generateNotes: StickyNote,
+};
+
+const MODE_DEFAULT_QUESTIONS: Record<StudyModeKey, string> = {
+    generateSummary: "Generate a summary of this document.",
+    generateQuiz: "Generate a quiz based on this document.",
+    generateFlashcards: "Generate flashcards based on this document.",
+    generateInterviewQuestions: "Generate interview questions based on this document.",
+    explainLikeIm10: "Explain this document like I'm 10 years old.",
+    generateNotes: "Generate study notes based on this document.",
 };
 
 export default function ChatInput({
@@ -34,6 +65,8 @@ export default function ChatInput({
     const [question, setQuestion] = useState("");
     const [uploads, setUploads] = useState<UploadItem[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const isSendingRef = useRef(false);
 
     const handleAttachClick = () => {
         fileInputRef.current?.click();
@@ -71,12 +104,9 @@ export default function ChatInput({
             }
 
             if (chatId) {
-                // Chat already exists — attach the document to it right away
                 const updatedChat = await addDocumentsToChat(chatId, [doc._id]);
                 onDocumentsAttached(updatedChat);
             } else {
-                // No chat yet — hand the ready document up so it can be used
-                // to create the chat once the user sends their first message
                 onDocumentReady({
                     _id: doc._id,
                     title: doc.title,
@@ -122,14 +152,32 @@ export default function ChatInput({
     };
 
     const isAnyFileProcessing = uploads.some((u) => u.status === "processing");
+    const isReadyToSend = canSend && !disabled && !isAnyFileProcessing;
 
     const handleSend = () => {
         const trimmed = question.trim();
 
-        if (!trimmed || disabled) return;
+        if (!trimmed || !isReadyToSend || isSendingRef.current) return;
 
+        isSendingRef.current = true;
         onSend(trimmed);
         setQuestion("");
+
+        setTimeout(() => {
+            isSendingRef.current = false;
+        }, 300);
+    };
+
+    const handleModeClick = (mode: StudyModeKey) => {
+        if (!isReadyToSend || isSendingRef.current) return;
+
+        isSendingRef.current = true;
+        onSend(question.trim() || MODE_DEFAULT_QUESTIONS[mode], mode);
+        setQuestion("");
+
+        setTimeout(() => {
+            isSendingRef.current = false;
+        }, 300);
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -140,7 +188,7 @@ export default function ChatInput({
     };
 
     return (
-        <div className="border-t border-base-300 bg-base-100 p-4">
+        <div className="p-2">
             {uploads.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-2">
                     {uploads.map((u) => (
@@ -169,6 +217,33 @@ export default function ChatInput({
                 </div>
             )}
 
+            {/* Study mode quick actions — only usable once a file is fully embedded */}
+            <div className="mb-3 flex flex-wrap gap-2">
+                {STUDY_MODE_OPTIONS.map(({ key, label }) => {
+                    const Icon = MODE_ICONS[key];
+
+                    return (
+                        <button
+                            key={key}
+                            type="button"
+                            onClick={() => handleModeClick(key)}
+                            disabled={!isReadyToSend}
+                            title={
+                                !canSend
+                                    ? "Attach and wait for a file to finish processing first"
+                                    : isAnyFileProcessing
+                                        ? "Wait for the file to finish processing"
+                                        : label
+                            }
+                            className="btn btn-outline btn-sm gap-1.5 disabled:opacity-40"
+                        >
+                            <Icon size={14} />
+                            {label}
+                        </button>
+                    );
+                })}
+            </div>
+
             <div className="flex items-end gap-2 rounded-2xl border border-base-300 bg-base-200 p-2">
                 <input
                     ref={fileInputRef}
@@ -195,7 +270,7 @@ export default function ChatInput({
                     onKeyDown={handleKeyDown}
                     placeholder={
                         canSend
-                            ? "Ask a question about your document..."
+                            ? "Ask a question, or pick an action above..."
                             : "Attach a file to get started..."
                     }
                     rows={1}
@@ -206,7 +281,7 @@ export default function ChatInput({
                 <button
                     type="button"
                     onClick={handleSend}
-                    disabled={disabled || !question.trim() || isAnyFileProcessing || !canSend}
+                    disabled={!question.trim() || !isReadyToSend}
                     className="btn btn-primary btn-circle btn-sm shrink-0"
                     title={
                         !canSend
@@ -221,7 +296,7 @@ export default function ChatInput({
             </div>
 
             <p className="mt-2 text-center text-xs text-base-content/40">
-                Attach PDF, DOC, DOCX or TXT files — they start processing as soon as you select them
+                Nexa is AI and can make mistakes. Please double-check responses — Attach PDF, DOC, DOCX or TXT files 
             </p>
         </div>
     );
