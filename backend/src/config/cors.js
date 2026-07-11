@@ -1,7 +1,6 @@
 import cors from "cors";
 
 const allowedOrigins = [
-    "http://localhost:5173",
     process.env.FRONTEND_URL,
 ].filter(Boolean);
 
