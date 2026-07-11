@@ -117,7 +117,7 @@ export default function WelcomeScreen() {
                 </h1>
 
                 <p className="mt-3 max-w-2xl text-base-content/70">
-                    Upload your study material and let Nexa transform it
+                    Upload your study material and let LearnIQ transform it
                     into an interactive AI tutor.
                 </p>
 
@@ -153,7 +153,7 @@ export default function WelcomeScreen() {
                 <div className="mb-6 flex items-center justify-between">
 
                     <h2 className="text-2xl font-semibold">
-                        What can Nexa do?
+                        What can LearnIQ do?
                     </h2>
 
                     <span className="text-sm text-base-content/60">

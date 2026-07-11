@@ -296,7 +296,7 @@ export default function ChatInput({
             </div>
 
             <p className="mt-2 text-center text-xs text-base-content/40">
-                Nexa is AI and can make mistakes. Please double-check responses — Attach PDF, DOC, DOCX or TXT files 
+                LearnIQ is AI and can make mistakes. Please double-check responses — Attach PDF, DOC, DOCX or TXT files 
             </p>
         </div>
     );

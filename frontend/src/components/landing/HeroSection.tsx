@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section className="relative z-10 min-h-screen overflow-hidden">
 
       {/* Background Video */}
       <video
@@ -55,7 +55,7 @@ export default function HeroSection() {
 
             <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 
-              with Nexa
+              with LearnIQ
 
             </span>
 

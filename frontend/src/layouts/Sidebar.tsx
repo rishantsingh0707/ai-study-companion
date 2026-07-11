@@ -30,7 +30,7 @@ export default function Sidebar() {
                     className="flex items-center gap-2 transition-opacity hover:opacity-80"
                 >
                     <BrainCog className="h-10 w-10 text-primary" />
-                    <span className="text-lg font-bold text-base-content">Nexa</span>
+                    <span className="text-lg font-bold text-base-content">LearnIQ</span>
                 </Link>
             </div>
 

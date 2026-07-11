@@ -75,7 +75,7 @@ export default function RegisterPage() {
     return (
         <AuthLayout
             title="Create Account"
-            subtitle="Start studying smarter with Nexa."
+            subtitle="Start studying smarter with LearnIQ."
         >
             <AuthCard
                 googleButton={<GoogleButton />}
