@@ -10,7 +10,6 @@ import RegisterPage from "../pages/RegisterPage";
 import DashboardPage from "../pages/DashboardPage";
 
 import ProtectedRoute from "../components/auth/ProtectedRoute";
-import SettingsPage from "../pages/SettingsPage";
 import ChatHistoryPage from "../pages/ChatHistoryPage";
 import ChatPage from "../pages/ChatPage";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -60,11 +59,6 @@ export default function AppRouter() {
                 <Route
                     path="history"
                     element={<ChatHistoryPage />}
-                />
-
-                <Route
-                    path="settings"
-                    element={<SettingsPage />}
                 />
             </Route>
 
