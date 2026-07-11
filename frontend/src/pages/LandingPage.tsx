@@ -4,7 +4,7 @@ import FeaturesSection from "../components/landing/FeaturesSection";
 import AboutSection from "../components/landing/AboutSection";
 import FaqSection from "../components/landing/FaqSection";
 import ContactSection from "../components/landing/ContactSection";
-import Lightfall from "../components/landing/Lightfall";
+import Lightfall from "../components/landing/LightFall.tsx";
 import { useInViewport } from "../hooks/useInViewport";
 
 export default function LandingPage() {
