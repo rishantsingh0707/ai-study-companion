@@ -26,14 +26,26 @@ h6 {
 }
 
 .glass-card {
-    background: rgba(255, 255, 255, .05);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-
-    border: 1px solid rgba(255, 255, 255, .08);
+    position: relative;
+    background: #18181b;
+    border: 1px solid rgba(255, 255, 255, .1);
 
     box-shadow:
-        0 8px 30px rgba(0, 0, 0, .35);
+        0 8px 30px rgba(0, 0, 0, .45);
+}
+
+/* Subtle top sheen for a "glossy" feel without an expensive backdrop-filter */
+.glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, .06) 0%,
+        rgba(255, 255, 255, 0) 40%
+    );
+    pointer-events: none;
 }
 
 .glass-navbar {

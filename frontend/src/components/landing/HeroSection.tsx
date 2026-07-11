@@ -6,17 +6,42 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { useInViewport } from "../../hooks/useInViewport";
 
 export default function HeroSection() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const { ref: sectionRef, isVisible } = useInViewport<HTMLElement>(0.15);
+
+  // Pause video decode entirely once the hero scrolls out of view (or the
+  // tab isn't active) — this is what was competing with the background
+  // animation for GPU time and causing the stutter/buffering feeling.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isVisible) {
+      video.play().catch(() => {
+        // Autoplay can be rejected before user interaction — harmless here.
+      });
+    } else {
+      video.pause();
+    }
+  }, [isVisible]);
+
   return (
-    <section className="relative z-10 min-h-screen overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative z-10 min-h-screen overflow-hidden"
+    >
 
       {/* Background Video */}
       <video
-        autoPlay
+        ref={videoRef}
         muted
         loop
         playsInline
+        preload="auto"
         className="absolute top-0 left-0 h-full w-full object-cover brightness-60 contrast-100 saturate-100"
       >
         <source src="/hero-video.mp4" type="video/mp4" />
@@ -55,7 +80,7 @@ export default function HeroSection() {
 
             <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 
-              with LearnIQ
+              with Nexa
 
             </span>
 

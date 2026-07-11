@@ -4,31 +4,39 @@ import FeaturesSection from "../components/landing/FeaturesSection";
 import AboutSection from "../components/landing/AboutSection";
 import FaqSection from "../components/landing/FaqSection";
 import ContactSection from "../components/landing/ContactSection";
-import FloatingLines from "../components/landing/FloatingLines";
+import Lightfall from "../components/landing/Lightfall";
+import { useInViewport } from "../hooks/useInViewport";
 
 export default function LandingPage() {
+    
+    const { ref: contentRef, isVisible } = useInViewport<HTMLDivElement>(0);
+
     return (
         <>
             <Navbar />
             <HeroSection />
 
-            {/* Everything below the hero sits on top of a shared animated
-                background. The background is `fixed`, so it stays in view
-                as you scroll through Features / About / FAQ / Contact. */}
-            <div className="relative">
+        
+            <div ref={contentRef} className="relative">
                 <div className="fixed inset-0 z-0">
-                    <FloatingLines
-                        enabledWaves={["top", "middle", "bottom"]}
-                        lineCount={8}
-                        lineDistance={8}
-                        bendRadius={8}
-                        bendStrength={-2}
-                        interactive
-                        parallax
-                        animationSpeed={1}
-                        gradientStart="#e945f5"
-                        gradientMid="#6f6f6f"
-                        gradientEnd="#6a6a6a"
+                    <Lightfall
+                        paused={!isVisible}
+                        colors={["#e945f5", "#7c3aed", "#22d3ee"]}
+                        backgroundColor="#09090b"
+                        speed={0.5}
+                        streakCount={3}
+                        streakWidth={1}
+                        streakLength={1.2}
+                        glow={1}
+                        density={0.6}
+                        twinkle={1}
+                        zoom={3}
+                        backgroundGlow={0.4}
+                        opacity={0.8}
+                        mouseInteraction
+                        mouseStrength={0.6}
+                        mouseRadius={1}
+                        mouseDampening={0.15}
                     />
                 </div>
 
