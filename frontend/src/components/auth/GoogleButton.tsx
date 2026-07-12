@@ -64,7 +64,7 @@ export default function GoogleButton() {
             <button
                 type="button"
                 tabIndex={-1}
-                className="flex w-full items-center justify-center gap-3 rounded-full border border-white/10 bg-base-200 px-4 py-3 text-sm font-medium text-base-content transition-colors duration-200 hover:bg-base-300"
+                className="flex w-full items-center justify-center gap-3 rounded-full border border-white/10 bg-base-200 px-4 py-3 text-sm font-medium text-base-content transition-colors duration-200 hover:bg-base-300 "
             >
                 <GoogleIcon />
                 Continue with Google
