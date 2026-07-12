@@ -10,43 +10,54 @@ export default function GoogleButton() {
 
     const { refreshUser } = useAuth();
 
-    const handleSuccess = async (credentialResponse: { credential?: string }) => {
-        try {
-            if (!credentialResponse.credential) {
-                toast.error("Google authentication failed.");
-                return;
-            }
-
-            const response = await googleLogin(credentialResponse.credential);
-
-            saveToken(response.token);
-
-            await refreshUser();
-
-            toast.success(`Welcome back, ${response.user.name}!`);
-
-            navigate("/dashboard");
-        } catch (error) {
-            console.error(error);
-            toast.error("Google sign in failed.");
-        }
-    };
-
-    const handleError = () => {
-        toast.error("Google sign in failed.");
-    };
-
     return (
-        <div className="flex w-full justify-center overflow-hidden rounded-full">
+        <div className="flex justify-center">
+
             <GoogleLogin
                 theme="filled_black"
                 shape="pill"
                 size="large"
+                width="320"
                 text="continue_with"
-                width="336"
-                onSuccess={handleSuccess}
-                onError={handleError}
+                onSuccess={async (credentialResponse) => {
+                    try {
+
+                        if (!credentialResponse.credential) {
+                            toast.error("Google authentication failed.");
+                            return;
+                        }
+
+                        const response = await googleLogin(
+                            credentialResponse.credential
+                        );
+
+                        saveToken(response.token);
+
+                        await refreshUser();
+
+                        toast.success(
+                            `Welcome back, ${response.user.name}!`
+                        );
+
+                        navigate("/dashboard");
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        toast.error(
+                            "Google sign in failed."
+                        );
+
+                    }
+                }}
+                onError={() => {
+                    toast.error(
+                        "Google sign in failed."
+                    );
+                }}
             />
+
         </div>
     );
 }
