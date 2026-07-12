@@ -80,7 +80,7 @@ export default function HeroSection() {
 
             <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 
-              with Nexa
+              with LearnIQ
 
             </span>
 
