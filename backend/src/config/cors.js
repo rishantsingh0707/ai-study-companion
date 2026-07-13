@@ -2,6 +2,7 @@ import cors from "cors";
 
 const allowedOrigins = [
     process.env.FRONTEND_URL,
+    ...(process.env.NODE_ENV !== "production" ? ["http://localhost:5173"] : []),
 ].filter(Boolean);
 
 export default cors({
