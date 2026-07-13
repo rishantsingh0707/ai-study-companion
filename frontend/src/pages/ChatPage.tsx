@@ -14,10 +14,10 @@ export default function ChatPage() {
     const state = location.state as LocationState | null;
 
     return (
-        <div className="h-[calc(100vh-4rem)]">
+        <div className="h-full">
             <ChatContainer
-                chatId={isNewChat ? "" : chatId!}
-                initialDocuments={isNewChat ? state?.readyDocuments: undefined}
+                chatId={isNewChat ? null : chatId!}
+                initialDocuments={isNewChat ? state?.readyDocuments : undefined}
             />
         </div>
     );
