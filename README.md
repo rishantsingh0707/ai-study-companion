@@ -1,221 +1,112 @@
-# LearnIQ
+# AI Study Companion
 
-> AI-powered study workspace for chatting with documents, generating quizzes, summaries, flashcards, interview questions, and more.
+An AI-powered study assistant that lets you upload your own documents and turns them into an interactive, RAG-powered learning experience — chat with your notes, generate summaries, quizzes, flashcards, and interview questions on demand.
 
----
+## ✨ Features
 
-## Overview
+- **Context-aware document chat** — ask questions about your uploaded material and get answers grounded in the actual content, powered by a Retrieval-Augmented Generation (RAG) pipeline.
+- **Multi-format document support** — upload **PDF, DOCX, PPTX, and TXT** files with automated text extraction and chunking.
+- **AI study tools**, including:
+  - Conversational chat over your documents
+  - Auto-generated summaries
+  - Quizzes for self-testing
+  - Flashcards for spaced repetition
+  - Practice interview questions
+- **Fast, responsive UI** built with React, TypeScript, and Tailwind CSS.
+- **Efficient data fetching & caching** via React Query for a smooth, seamless experience.
 
-LearnIQ is an AI-powered study platform that transforms your notes, PDFs, DOCX files, and text documents into an interactive learning workspace.
+## 🧠 How It Works
 
-Instead of reading static notes, users can upload multiple documents into a workspace and interact with them using natural language.
+1. Documents are uploaded and processed through a secure pipeline that extracts and chunks text.
+2. Text chunks are embedded using **Gemini embeddings** and stored in **ChromaDB Cloud** as a vector store.
+3. When a user asks a question, relevant chunks are retrieved via similarity search and passed as context to **Groq's Llama 3.3 70B** model.
+4. The model generates grounded, context-aware responses — chat answers, summaries, quizzes, flashcards, or interview questions.
 
----
+## 🛠️ Tech Stack
 
-## Features
+**Frontend:** React, TypeScript, Tailwind CSS, React Query
+**Backend:** Node.js, Express
+**Database / Storage:** MongoDB, ChromaDB Cloud, Redis
+**AI / ML:** Gemini Embeddings, Groq (Llama 3.3 70B)
+**Deployment:** Vercel (frontend), Render (backend)
 
-- AI Chat with uploaded documents
-- Multi-document workspaces
-- AI-generated summaries
-- Quiz generation
-- Flashcard generation
-- Interview question generation
-- Explain complex topics in simple language
-- Smart notes generation
-- Google Authentication
-- JWT Authentication
-- Chat history
-- Semantic search using vector embeddings
-- Redis caching
-- Responsive modern UI
-
----
-
-## Tech Stack
-
-### Frontend
-
-- React 
-- TypeScript
-- Vite
-- Tailwind CSS
-- DaisyUI
-- TanStack Query
-- React Router
-- Framer Motion
-- React Markdown
-- Three.js
-
-### Backend
-
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- Redis
-- JWT
-- Google OAuth
-
-### AI
-
-- Groq API
-- Google Gemini Embeddings
-- ChromaDB Cloud
-
----
-
-## Architecture
+## 📂 Project Structure
 
 ```
-User
-
-↓
-
-Create Workspace
-
-↓
-
-Upload Documents
-
-↓
-
-Extract Text
-
-↓
-
-Store Extracted Text (MongoDB)
-
-↓
-
-Generate Embeddings (Gemini)
-
-↓
-
-Store Vectors (Chroma)
-
-↓
-
-Semantic Search
-
-↓
-
-Groq LLM
-
-↓
-
-AI Response
+ai-study-companion/
+├── backend/          # Express API, RAG pipeline, document processing
+├── frontend/         # React + TypeScript client
+├── docker-compose.yml
+└── docker-compose.dev.yml
 ```
 
----
+## 🚀 Getting Started
 
-## Project Structure
+### Prerequisites
+- Node.js (v18+)
+- MongoDB instance (local or Atlas)
+- ChromaDB Cloud account & API key
+- Groq API key
+- Gemini API key
 
-```
-frontend/
-
-backend/
-```
-
----
-
-## Installation
-
-### Clone Repository
+### Installation
 
 ```bash
-git clone https://github.com/rishantsingh0707/ai-study-companion
-```
+# Clone the repository
+git clone https://github.com/rishantsingh0707/ai-study-companion.git
+cd ai-study-companion
 
-### Backend
-
-```bash
+# Install backend dependencies
 cd backend
-
 npm install
 
-npm run dev
+# Install frontend dependencies
+cd ../frontend
+npm install
 ```
 
-### Frontend
+### Environment Variables
+
+Create a `.env` file in the `backend` directory with the following:
+
+```
+MONGODB_URI= your_mongodb_uri
+REDIS_URL=your_redis_url
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET= your_client_secret
+JWT_SECRET= your_jwt_secret
+CHROMA_API_KEY = your_croma_key
+CHROMA_TENANT = your_croma_tenant
+CHROMA_DATABASE = your_database_name
+PORT="5000"
+FRONTEND_URL= "your_frontend_url"
+
+```
+Create a `.env` file in the `backend` directory with the following:
+
+```
+VITE_GOOGLE_CLIENT_ID= your_google_clientid
+
+VITE_API_URL= your_backend_url
+
+```
+
+### Running Locally
 
 ```bash
-cd frontend
+# Using Docker Compose (recommended)
+docker-compose -f docker-compose.dev.yml up
 
-npm install
-
-npm run dev
+# Or run manually
+cd backend && npm run dev
+cd frontend && npm run dev
 ```
 
----
+## 🌐 Live Demo
 
-## Environment Variables
+[Demo](https://learniq-steel.vercel.app)
 
-Backend
+## 👤 Author
 
-```env
-PORT=
-
-MONGODB_URI=
-
-JWT_SECRET=
-
-GOOGLE_CLIENT_ID=
-
-GOOGLE_CLIENT_SECRET=
-
-GROQ_API_KEY=
-
-GEMINI_API_KEY=
-
-REDIS_URL=
-
-CHROMA_API_KEY=
-
-CHROMA_TENANT=
-
-CHROMA_DATABASE=
-```
-
-Frontend
-
-```env
-VITE_API_URL=
-
-VITE_GOOGLE_CLIENT_ID=
-```
-
----
-
-## Screenshots
-
-Coming Soon
-
----
-
-## Roadmap
-
-- Streaming AI responses
-- Workspace management
-- Multiple document uploads
-- Chat title generation
-- Notes export
-- Citation support
-- Mobile optimization
-- Dark / Light themes
-
----
-
-## Future Improvements
-
-- OCR support
-- Audio transcription
-- PDF annotations
-- Mind maps
-- Collaborative workspaces
-- AI-generated study plans
-
----
-
-## License
-
-MIT License
+**Rishant Singh**
+[GitHub](https://github.com/rishantsingh0707) · [LinkedIn](https://www.linkedin.com/in/rishant-singh1408)
